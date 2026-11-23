@@ -46,7 +46,7 @@ export function KitchenSinkPage() {
   };
 
   return (
-    <main id="main-content" className={styles.page}>
+    <div className={styles.page}>
       <header className={styles.header}>
         <div>
           <p className={styles.kicker}>JPD113 Design System · Washi &amp; Sumi</p>
@@ -264,6 +264,6 @@ export function KitchenSinkPage() {
       >
         <p>Thao tác này sẽ xoá điểm luyện tập đã lưu trên máy. Em có thể xuất bản sao lưu trước.</p>
       </Dialog>
-    </main>
+    </div>
   );
 }

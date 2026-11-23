@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+z.config({ jitless: true });
+
 export const KanjiPairSchema = z.tuple([z.string().min(1), z.string().min(1)]);
 
 export const CfgSchema = z

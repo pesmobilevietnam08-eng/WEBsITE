@@ -55,3 +55,8 @@ Tài liệu ghi nhận các quyết định kỹ thuật quan trọng theo nguy�
 - **Ngày:** 2026-11-24
 - **Quyết định:** Không sửa `data/data.json` (tuân thủ quy tắc cứng không sửa nội dung trong `data/`). Ghi nhận chi tiết 10 câu Bài 3 dùng mã `R9` thiếu trong `data.scale` vào `docs/DATA-REPORT.md`. `validateAllSources()` fail theo mặc định với mọi mã lỗi không tồn tại trong `scale` (có unit test chứng minh), còn CLI `npm run validate:data` áp dụng danh sách ngoại lệ duy nhất `Set(['R9'])` (có thể tắt bằng cờ `--strict-scale`). Khi UI cần hiển thị mô tả tổng quan cho `R9`, `src/engine/scale.ts` cung cấp fallback `R9_FALLBACK_SCALE`.
 - **Lý do:** Giữ nguyên dữ liệu gốc 100%, không bỏ qua bất kỳ lỗi schema mới nào, và đảm bảo engine chấm khớp 100% với bản gốc.
+
+## ADR-011: Bật `z.config({ jitless: true })` cho Zod v4 để tuân thủ tuyệt đối CSP & Trusted Types
+- **Ngày:** 2026-11-24
+- **Quyết định:** Cấu hình `z.config({ jitless: true })` tại điểm khởi chạy ứng dụng (`src/main.tsx`, `src/storage/schema.ts`, `src/data/schema.ts`).
+- **Lý do:** Mặc định Zod v4 thử gọi `new Function(...)` (JIT) khi parse schema, gây cảnh báo vi phạm Trusted Types (`This document requires 'TrustedScript' assignment`) dưới chính sách CSP `require-trusted-types-for 'script'`. Chế độ `jitless: true` vô hiệu hóa hoàn toàn việc sinh mã động, đạt 0 vi phạm CSP trong console.

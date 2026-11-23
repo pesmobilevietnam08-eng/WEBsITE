@@ -50,3 +50,8 @@ Tài liệu ghi nhận các quyết định kỹ thuật quan trọng theo nguy�
 - **Ngày:** 2026-11-24
 - **Quyết định:** Bật `ignore-scripts=true` và `save-exact=true` trong `.npmrc`; cam kết `package-lock.json`; sinh SBOM định dạng CycloneDX trong `scripts/generate-sbom.mjs` / `npm run sbom`; cấu hình git hook qua `core.hooksPath=.githooks` thay vì phụ thuộc postinstall script của package bên thứ ba.
 - **Lý do:** Giảm bề mặt tấn công supply chain theo `docs/04-SECURITY.md` mục 4 mà vẫn chạy được pre-commit lint/typecheck.
+
+## ADR-010: Xử lý mã lỗi `R9` thiếu trong `data.scale` mà không sửa file nguồn `data/`
+- **Ngày:** 2026-11-24
+- **Quyết định:** Không sửa `data/data.json` (tuân thủ quy tắc cứng không sửa nội dung trong `data/`). Ghi nhận chi tiết 10 câu Bài 3 dùng mã `R9` thiếu trong `data.scale` vào `docs/DATA-REPORT.md`. `validateAllSources()` fail theo mặc định với mọi mã lỗi không tồn tại trong `scale` (có unit test chứng minh), còn CLI `npm run validate:data` áp dụng danh sách ngoại lệ duy nhất `Set(['R9'])` (có thể tắt bằng cờ `--strict-scale`). Khi UI cần hiển thị mô tả tổng quan cho `R9`, `src/engine/scale.ts` cung cấp fallback `R9_FALLBACK_SCALE`.
+- **Lý do:** Giữ nguyên dữ liệu gốc 100%, không bỏ qua bất kỳ lỗi schema mới nào, và đảm bảo engine chấm khớp 100% với bản gốc.

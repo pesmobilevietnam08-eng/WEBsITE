@@ -8,5 +8,6 @@ public/images/
 public/sw.js
 public/workbox-*.js
 *.log
+*.tsbuildinfo
 .DS_Store
 Thumbs.db

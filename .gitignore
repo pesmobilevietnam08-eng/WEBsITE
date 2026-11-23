@@ -7,6 +7,7 @@ src/data/generated/
 public/images/
 public/sw.js
 public/workbox-*.js
+sbom.cdx.json
 *.log
 *.tsbuildinfo
 .DS_Store

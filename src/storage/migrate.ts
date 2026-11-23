@@ -1,5 +1,11 @@
-import { safeJsonParse, sanitizeLearnerName } from '../lib/sanitize';
-import { createDefaultState, type StorageV3 } from './schema';
+import { isSafeRecordKey, safeJsonParse, sanitizeLearnerName } from '../lib/sanitize';
+import {
+  MAX_RECORD_ENTRIES,
+  MAX_STORAGE_BYTES,
+  StorageV3Schema,
+  createDefaultState,
+  type StorageV3,
+} from './schema';
 
 interface LegacyEntryLike {
   n?: unknown;
@@ -16,6 +22,15 @@ function safeString(val: unknown, maxLen: number): string {
   return typeof val === 'string' ? val.slice(0, maxLen) : '';
 }
 
+function defineOwnEntry<T>(target: Record<string, T>, key: string, value: T): void {
+  Object.defineProperty(target, key, {
+    value,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  });
+}
+
 /**
  * Non-destructively migrates legacy flat `rbl-jpd113-web-v2` JSON into validated `StorageV3`.
  * `jpds-min` is intentionally ignored (promo module defaults to OFF).
@@ -24,6 +39,13 @@ export function migrateFromLegacyV2(
   rawLegacyJson: string,
   nowIso: string = new Date().toISOString(),
 ): StorageV3 | null {
+  if (typeof rawLegacyJson !== 'string' || !rawLegacyJson.trim()) {
+    return null;
+  }
+  if (new TextEncoder().encode(rawLegacyJson).byteLength > MAX_STORAGE_BYTES) {
+    return null;
+  }
+
   let parsed: unknown;
   try {
     parsed = safeJsonParse(rawLegacyJson);
@@ -48,6 +70,9 @@ export function migrateFromLegacyV2(
     state.settings.pcBannerDismissed = true;
   }
 
+  let readCount = 0;
+  let qaCount = 0;
+
   for (const [key, value] of Object.entries(obj)) {
     if (key.startsWith('_')) continue;
     if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
@@ -58,26 +83,29 @@ export function migrateFromLegacyV2(
 
     if (key.startsWith('R:')) {
       const readId = key.slice(2).trim();
-      if (!readId || readId.length > 64) continue;
-      state.readAttempts[readId] = {
+      if (!isSafeRecordKey(readId) || readCount >= MAX_RECORD_ENTRIES) continue;
+      defineOwnEntry(state.readAttempts, readId, {
         best,
         last,
         count,
         lastAt: nowIso,
         history: count > 0 ? [{ at: nowIso, score: best, input: last }] : [],
-      };
+      });
+      readCount++;
     } else {
       const qid = key.trim();
-      if (!qid || qid.length > 64) continue;
-      state.attempts[qid] = {
+      if (!isSafeRecordKey(qid) || qaCount >= MAX_RECORD_ENTRIES) continue;
+      defineOwnEntry(state.attempts, qid, {
         best,
         last,
         count,
         lastAt: nowIso,
         history: count > 0 ? [{ at: nowIso, score: best, input: last }] : [],
-      };
+      });
+      qaCount++;
     }
   }
 
-  return state;
+  const validated = StorageV3Schema.safeParse(state);
+  return validated.success ? validated.data : null;
 }

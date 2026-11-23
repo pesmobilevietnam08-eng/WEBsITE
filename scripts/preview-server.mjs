@@ -24,6 +24,19 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
+const ERROR_HEADERS = {
+  'Content-Type': 'text/plain; charset=utf-8',
+  'Content-Security-Policy': "default-src 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'no-referrer',
+  'X-Frame-Options': 'DENY',
+};
+
+function sendError(res, status, message) {
+  res.writeHead(status, ERROR_HEADERS);
+  res.end(message);
+}
+
 function parseHeadersFile(filePath) {
   const rules = [];
   if (!fs.existsSync(filePath)) return rules;
@@ -62,20 +75,28 @@ const port = portIdx >= 0 ? Number(args[portIdx + 1]) : 4173;
 const headerRules = parseHeadersFile(headersFile);
 
 const server = http.createServer((req, res) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    sendError(res, 405, 'Method Not Allowed');
+    return;
+  }
+
   const urlPath = (req.url || '/').split('?')[0];
   let safePath;
   try {
     safePath = decodeURIComponent(urlPath);
   } catch {
-    res.writeHead(400);
-    res.end('Bad Request');
+    sendError(res, 400, 'Bad Request');
+    return;
+  }
+
+  if (safePath.includes('\0') || safePath.includes('\\')) {
+    sendError(res, 400, 'Bad Request');
     return;
   }
 
   const normalized = path.posix.normalize(safePath);
   if (normalized.includes('..')) {
-    res.writeHead(403);
-    res.end('Forbidden');
+    sendError(res, 403, 'Forbidden');
     return;
   }
 
@@ -84,16 +105,14 @@ const server = http.createServer((req, res) => {
     filePath = path.join(filePath, 'index.html');
   }
   if (!fs.existsSync(filePath)) {
-    res.writeHead(404);
-    res.end('Not Found');
+    sendError(res, 404, 'Not Found');
     return;
   }
 
   const resolvedDist = path.resolve(distDir);
   const resolvedFile = path.resolve(filePath);
-  if (!resolvedFile.startsWith(resolvedDist)) {
-    res.writeHead(403);
-    res.end('Forbidden');
+  if (resolvedFile !== resolvedDist && !resolvedFile.startsWith(resolvedDist + path.sep)) {
+    sendError(res, 403, 'Forbidden');
     return;
   }
 
@@ -105,8 +124,6 @@ const server = http.createServer((req, res) => {
   for (const rule of headerRules) {
     if (matchPattern(rule.pattern, normalized)) {
       for (const [k, v] of rule.headers) {
-        // Local HTTP server omits upgrade-insecure-requests on http://127.0.0.1
-        // only if --local-http is passed; otherwise keep exact headers.
         if (
           k.toLowerCase() === 'content-security-policy' &&
           args.includes('--strip-upgrade-insecure')
@@ -119,9 +136,11 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  // Note: Chromium ignores upgrade-insecure-requests on localhost/127.0.0.1 HTTP automatically,
-  // or upgrades on non-localhost. Keep exact header from _headers by default.
   res.writeHead(200, resHeaders);
+  if (req.method === 'HEAD') {
+    res.end();
+    return;
+  }
   fs.createReadStream(resolvedFile).pipe(res);
 });
 

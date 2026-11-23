@@ -558,6 +558,7 @@ export function MockExamPage() {
             className={styles.textarea}
             lang="ja"
             value={currentAnswer}
+            maxLength={3000}
             onChange={(e) => setCurrentAnswer(e.target.value)}
             placeholder="Nói bằng micro hoặc gõ Kana / Romaji…"
             autoComplete="off"

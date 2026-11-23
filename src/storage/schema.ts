@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DEFAULT_LEARNER_NAME } from '../lib/sanitize';
+import { DEFAULT_LEARNER_NAME, isSafeRecordKey, SAFE_RECORD_KEY_RX } from '../lib/sanitize';
 
 z.config({ jitless: true });
 
@@ -8,12 +8,20 @@ export const LEGACY_STORAGE_KEY_V2 = 'rbl-jpd113-web-v2';
 export const LEGACY_PROMO_KEY = 'jpds-min';
 
 export const MAX_STORAGE_BYTES = 900_000;
-export const MAX_IMPORT_BYTES = 1_048_576; // 1 MB
+export const MAX_IMPORT_BYTES = 1_048_576; // 1 MB raw file upload limit
 export const MAX_HISTORY_PER_ITEM = 20;
+export const MAX_RECORD_ENTRIES = 300;
+
+const IsoTimestampSchema = z.iso.datetime({ offset: true });
+
+const SafeRecordKeySchema = z
+  .string()
+  .regex(SAFE_RECORD_KEY_RX)
+  .refine((k) => isSafeRecordKey(k), 'Unsafe record key');
 
 export const AttemptHistoryItemSchema = z
   .object({
-    at: z.string().min(1).max(64),
+    at: IsoTimestampSchema,
     score: z.number().min(0).max(100),
     score15: z.number().min(0).max(15).optional(),
     codes: z.array(z.string().max(16)).max(12).optional(),
@@ -27,8 +35,8 @@ export const QuestionAttemptSchema = z
     bestScore15: z.number().min(0).max(15).optional(),
     last: z.string().max(2000),
     count: z.number().int().min(0).max(100_000),
-    lastAt: z.string().max(64).optional(),
-    nextReviewAt: z.string().max(64).optional(),
+    lastAt: IsoTimestampSchema.optional(),
+    nextReviewAt: IsoTimestampSchema.optional(),
     lastCodes: z.array(z.string().max(16)).max(12).optional(),
     history: z.array(AttemptHistoryItemSchema).max(MAX_HISTORY_PER_ITEM),
   })
@@ -39,8 +47,8 @@ export const ReadAttemptSchema = z
     best: z.number().min(0).max(100),
     last: z.string().max(2500),
     count: z.number().int().min(0).max(100_000),
-    lastAt: z.string().max(64).optional(),
-    nextReviewAt: z.string().max(64).optional(),
+    lastAt: IsoTimestampSchema.optional(),
+    nextReviewAt: IsoTimestampSchema.optional(),
     lastBreakdown: z
       .object({
         h: z.number().min(0).max(100),
@@ -56,7 +64,7 @@ export const ReadAttemptSchema = z
 export const ExamRecordSchema = z
   .object({
     id: z.string().min(1).max(64),
-    at: z.string().min(1).max(64),
+    at: IsoTimestampSchema,
     durationSec: z.number().int().min(0).max(7200),
     readScore: z.number().min(0).max(100),
     picAvgPct: z.number().min(0).max(100),
@@ -86,12 +94,16 @@ export const StorageV3Schema = z
     schema: z.literal(3),
     name: z.string().min(1).max(32),
     settings: SettingsSchema,
-    attempts: z.record(z.string().min(1).max(64), QuestionAttemptSchema),
-    readAttempts: z.record(z.string().min(1).max(64), ReadAttemptSchema),
+    attempts: z
+      .record(SafeRecordKeySchema, QuestionAttemptSchema)
+      .refine((rec) => Object.keys(rec).length <= MAX_RECORD_ENTRIES, 'Too many attempt records'),
+    readAttempts: z
+      .record(SafeRecordKeySchema, ReadAttemptSchema)
+      .refine((rec) => Object.keys(rec).length <= MAX_RECORD_ENTRIES, 'Too many reading records'),
     examHistory: z.array(ExamRecordSchema).max(50),
     activityDays: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).max(1000),
-    createdAt: z.string().min(1).max(64),
-    updatedAt: z.string().min(1).max(64),
+    createdAt: IsoTimestampSchema,
+    updatedAt: IsoTimestampSchema,
   })
   .strict();
 
@@ -99,7 +111,7 @@ export const BackupEnvelopeSchema = z
   .object({
     format: z.literal('jpd113-backup'),
     version: z.literal(3),
-    exportedAt: z.string().min(1).max(64),
+    exportedAt: IsoTimestampSchema,
     sha256: z.string().regex(/^[0-9a-f]{64}$/),
     payload: StorageV3Schema,
   })

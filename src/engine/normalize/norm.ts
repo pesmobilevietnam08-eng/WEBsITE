@@ -155,6 +155,9 @@ export function createNormalizer(cfg: Pick<CfgData, 'kx' | 'vs'>): Normalizer {
       s = s.slice(0, maxLen);
     }
     s = s.normalize('NFKC');
+    if (s.length > maxLen) {
+      s = s.slice(0, maxLen);
+    }
     s = romajiText(s);
     s = s.replace(/時間半/g, '時かんはん').replace(/時間/g, '時かん');
     for (const [k, v] of filteredKanji) {
@@ -208,7 +211,8 @@ export function createNormalizer(cfg: Pick<CfgData, 'kx' | 'vs'>): Normalizer {
     s = s.replace(/(\d+)\s*万/g, (_m, n: string) => `${numK(+n)}まん`);
     s = s.replace(/じかんさんじゅっぷん/g, 'じかんはん');
     s = s.toLowerCase().replace(/[\s、。，．,.!！?？「」『』（）()〜~・…]/g, '');
-    return lenFix(kataToHira(s));
+    const out = lenFix(kataToHira(s));
+    return out.length > maxLen ? out.slice(0, maxLen) : out;
   };
 
   return { kanjiTable, norm };

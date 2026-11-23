@@ -48,7 +48,7 @@ Tài liệu ghi nhận các quyết định kỹ thuật quan trọng theo nguy�
 
 ## ADR-009: Chuỗi cung ứng (`ignore-scripts=true` & ghim phiên bản chính xác)
 - **Ngày:** 2026-11-24
-- **Quyết định:** Bật `ignore-scripts=true` và `save-exact=true` trong `.npmrc`; cam kết `package-lock.json`; sinh SBOM định dạng CycloneDX trong `scripts/generate-sbom.mjs` / `npm run sbom`; cấu hình git hook qua `core.hooksPath=.githooks` thay vì phụ thuộc postinstall script của package bên thứ ba.
+- **Quyết định:** Bật `ignore-scripts=true` và `save-exact=true` trong `.npmrc`; cam kết `package-lock.json`; sinh SBOM định dạng CycloneDX 1.5 (`sbom.cdx.json`) qua `npm run sbom` (`@cyclonedx/cyclonedx-npm`); cấu hình git hook qua `core.hooksPath=.githooks` thay vì phụ thuộc postinstall script của package bên thứ ba. Bổ sung wrapper `scripts/run-npm-audit.mjs` để tách `npm_config_allow_scripts` khi chạy lồng `npm run audit` trên npm 11+.
 - **Lý do:** Giảm bề mặt tấn công supply chain theo `docs/04-SECURITY.md` mục 4 mà vẫn chạy được pre-commit lint/typecheck.
 
 ## ADR-010: Xử lý mã lỗi `R9` thiếu trong `data.scale` mà không sửa file nguồn `data/`
@@ -60,3 +60,12 @@ Tài liệu ghi nhận các quyết định kỹ thuật quan trọng theo nguy�
 - **Ngày:** 2026-11-24
 - **Quyết định:** Cấu hình `z.config({ jitless: true })` tại điểm khởi chạy ứng dụng (`src/main.tsx`, `src/storage/schema.ts`, `src/data/schema.ts`).
 - **Lý do:** Mặc định Zod v4 thử gọi `new Function(...)` (JIT) khi parse schema, gây cảnh báo vi phạm Trusted Types (`This document requires 'TrustedScript' assignment`) dưới chính sách CSP `require-trusted-types-for 'script'`. Chế độ `jitless: true` vô hiệu hóa hoàn toàn việc sinh mã động, đạt 0 vi phạm CSP trong console.
+
+## ADR-012: Gia cố hậu kiểm toán bảo mật độc lập (M-01..M-08 & L-02..L-08)
+- **Ngày:** 2026-11-24
+- **Quyết định:**
+  1. Đổi `/images/*` trong `public/_headers` từ `immutable` sang `public, max-age=86400, must-revalidate` vì tên tệp ảnh chưa chứa content hash (Workbox vẫn precache ảnh kèm mã revision nên giữ nguyên tốc độ ngoại tuyến).
+  2. Giới hạn độ sâu JSON (`MAX_JSON_DEPTH = 20`) và chuyển kiểm tra prototype pollution sang duyệt lặp trong `safeJsonParse`; siết regex khóa và giới hạn `<= 300` bản ghi cho `attempts`/`readAttempts` (cả v3 lẫn migrate v2); đối chiếu dung lượng payload sau sanitize `<= 900 KB` khi import.
+  3. Cắt lại chuỗi sau `.normalize('NFKC')` và cuối `norm()`/`readNorm()` để triệt tiêu khuếch đại 15× từ ký tự NFKC/số, chuyển DP sang `Int32Array` có trần độ dài, đồng thời giữ nguyên 100% khớp 1.818 ca golden test.
+  4. Đồng bộ cập nhật Service Worker qua sự kiện `controllerchange`, tránh ghi ngược `localStorage` ngay sau `resetAllData()`, gỡ `runtimeCaching` `.woff2` dư thừa, và cấm `npx --yes` tải gói ngoài lockfile trong `scripts/run-lighthouse.mjs`.
+- **Lý do:** Đóng toàn bộ 8 phát hiện mức Medium từ cuộc kiểm toán bảo mật độc lập ([docs/SECURITY-AUDIT.md](./SECURITY-AUDIT.md)), nâng kết luận phát hành từ `CONDITIONAL GO` lên `GO`.

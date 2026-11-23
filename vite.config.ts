@@ -10,7 +10,7 @@ export default defineConfig({
       injectRegister: false,
       filename: 'sw.js',
       manifestFilename: 'manifest.webmanifest',
-      includeAssets: ['icons/icon.svg', 'icons/apple-touch-icon.png', 'robots.txt'],
+      includeAssets: ['robots.txt'],
       manifest: {
         name: 'JPD113 Speaking Trainer',
         short_name: 'JPD113',
@@ -45,22 +45,18 @@ export default defineConfig({
       workbox: {
         cleanupOutdatedCaches: true,
         inlineWorkboxRuntime: true,
-        globPatterns: ['**/*.{js,css,html,svg,png,webp,avif,woff2,webmanifest}'],
-        globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        runtimeCaching: [
-          {
-            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.endsWith('.woff2'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'jpd113-fonts-v1',
-              expiration: {
-                maxEntries: 120,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-            },
-          },
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,avif,woff2}'],
+        globIgnores: [
+          '**/node_modules/**/*',
+          'sw.js',
+          'workbox-*.js',
+          'icons/icon-192.png',
+          'icons/icon-512.png',
+          'icons/maskable-512.png',
+          'assets/KitchenSinkPage-*.js',
+          'assets/KitchenSinkPage-*.css',
         ],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
       },
     }),
   ],

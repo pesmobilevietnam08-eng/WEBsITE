@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -115,6 +116,7 @@ export interface AppContextValue {
   readonly state: StorageV3;
   readonly resolvedTheme: 'light' | 'dark';
   readonly isOffline: boolean;
+  readonly storageWarning: boolean;
   readonly pwaUpdate: PwaUpdateHandle | null;
   readonly voices: readonly VoiceInfo[];
   readonly activeVoice: VoiceInfo | null;
@@ -163,13 +165,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isOffline, setIsOffline] = useState<boolean>(
     () => typeof navigator !== 'undefined' && !navigator.onLine,
   );
+  const [storageWarning, setStorageWarning] = useState(false);
   const [pwaUpdate, setPwaUpdate] = useState<PwaUpdateHandle | null>(null);
   const [voices, setVoices] = useState<VoiceInfo[]>(() => getJapaneseVoices());
   const capabilities = useMemo(() => detectSpeechCapabilities(), []);
+  const skipNextPersistRef = useRef(false);
 
-  // Persist state whenever it changes
+  // Persist state whenever it changes (skipped immediately after resetAllData so localStorage stays clean)
   useEffect(() => {
-    saveStorageState(state);
+    if (skipNextPersistRef.current) {
+      skipNextPersistRef.current = false;
+      return;
+    }
+    const ok = saveStorageState(state);
+    queueMicrotask(() => {
+      setStorageWarning(!ok);
+    });
   }, [state]);
 
   // Sync theme preference & system color-scheme listener
@@ -270,6 +281,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
   const resetAllData = useCallback(async () => {
     await clearAllUserData();
+    skipNextPersistRef.current = true;
+    setStorageWarning(false);
     dispatch({ type: 'RESET_ALL' });
   }, []);
 
@@ -278,6 +291,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       state,
       resolvedTheme,
       isOffline,
+      storageWarning,
       pwaUpdate,
       voices,
       activeVoice,
@@ -295,6 +309,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       state,
       resolvedTheme,
       isOffline,
+      storageWarning,
       pwaUpdate,
       voices,
       activeVoice,

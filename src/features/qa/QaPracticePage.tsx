@@ -196,9 +196,10 @@ export function QaPracticePage() {
   );
 
   const romajiLivePreview = useMemo(() => {
-    if (!/[A-Za-zāīūēōĀĪŪĒŌ]/.test(answer)) return null;
-    const converted = romajiText(answer);
-    return converted !== answer ? converted : null;
+    const bounded = answer.slice(0, 600);
+    if (!/[A-Za-zāīūēōĀĪŪĒŌ]/.test(bounded)) return null;
+    const converted = romajiText(bounded);
+    return converted !== bounded ? converted : null;
   }, [answer]);
 
   const handlePlayQuestion = () => {
@@ -471,6 +472,7 @@ export function QaPracticePage() {
               className={styles.textarea}
               lang="ja"
               value={answer}
+              maxLength={1000}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="Bấm Nói rồi trả lời, hoặc gõ tiếng Nhật hay Romaji (vd: roshia desu). Xong bấm Chấm câu trả lời."
               autoComplete="off"

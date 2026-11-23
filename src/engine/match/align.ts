@@ -20,9 +20,12 @@ const CONF: readonly (readonly [string, string])[] = [
   ['ん', 'む'],
 ];
 
+const MAX_DP_LEN = 2500;
+const MAX_CLASSIFY_SEG_LEN = 512;
+
 export function align(ref: readonly RefToken[], rec: readonly string[]): AlignSlot[] {
-  const n = ref.length;
-  const m = rec.length;
+  const n = Math.min(ref.length, MAX_DP_LEN);
+  const m = Math.min(rec.length, MAX_DP_LEN);
   const eq = (i: number, j: number): boolean => {
     const r = ref[i];
     const c = rec[j];
@@ -30,7 +33,7 @@ export function align(ref: readonly RefToken[], rec: readonly string[]): AlignSl
     return c === r.c || (Boolean(r.a) && c === r.a);
   };
 
-  const D: Int16Array[] = Array.from({ length: n + 1 }, () => new Int16Array(m + 1));
+  const D: Int32Array[] = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
   for (let i = 0; i <= n; i++) {
     const row = D[i];
     if (row) row[0] = i;
@@ -78,9 +81,9 @@ export function align(ref: readonly RefToken[], rec: readonly string[]): AlignSl
 }
 
 export function ops(a: readonly string[], b: readonly string[]): EditOp[] {
-  const n = a.length;
-  const m = b.length;
-  const D: Int16Array[] = Array.from({ length: n + 1 }, () => new Int16Array(m + 1));
+  const n = Math.min(a.length, MAX_DP_LEN);
+  const m = Math.min(b.length, MAX_DP_LEN);
+  const D: Int32Array[] = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
   for (let i = 0; i <= n; i++) {
     const row = D[i];
     if (row) row[0] = i;
@@ -137,7 +140,10 @@ export function classify(r: string, s: string): string[] {
     if (!L.includes(x)) L.push(x);
   };
 
-  for (const o of ops([...r], [...s])) {
+  for (const o of ops(
+    [...r].slice(0, MAX_CLASSIFY_SEG_LEN),
+    [...s].slice(0, MAX_CLASSIFY_SEG_LEN),
+  )) {
     if (o.t === 'del') {
       const ch = o.a ?? '';
       const p = o.p ?? '_';

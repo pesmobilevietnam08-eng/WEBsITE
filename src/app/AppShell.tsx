@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type MouseEvent, type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router';
 import { t } from '../lib/i18n';
 import { Banner, Button, Icon, type IconName } from '../ui';
@@ -21,8 +21,25 @@ const NAV_ITEMS: readonly NavItem[] = [
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { state, resolvedTheme, isOffline, pwaUpdate, capabilities, updateSettings } = useApp();
+  const {
+    state,
+    resolvedTheme,
+    isOffline,
+    storageWarning,
+    pwaUpdate,
+    capabilities,
+    updateSettings,
+  } = useApp();
   const [copiedUrl, setCopiedUrl] = useState(false);
+
+  const handleSkipToMain = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const main = document.getElementById('main-content');
+    if (main) {
+      main.focus();
+      main.scrollIntoView();
+    }
+  };
 
   const toggleTheme = () => {
     updateSettings({ theme: resolvedTheme === 'dark' ? 'light' : 'dark' });
@@ -39,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.shell}>
-      <a href="#main-content" className="skip-link">
+      <a href="#main-content" className="skip-link" onClick={handleSkipToMain}>
         {t('skipToMain')}
       </a>
 
@@ -139,6 +156,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Banner>
           ) : null}
 
+          {storageWarning ? (
+            <Banner tone="warn" title="Không thể lưu tiến độ vào trình duyệt">
+              Trình duyệt đang ở chế độ ẩn danh bị hạn chế hoặc bộ nhớ cục bộ đã đầy. Em nên xuất
+              tệp sao lưu (.json) trong mục Cài đặt để tránh mất tiến độ.
+            </Banner>
+          ) : null}
+
           {isOffline ? (
             <Banner tone="info" title={t('offlineTitle')}>
               {t('offlineBody')}
@@ -171,7 +195,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : null}
         </div>
 
-        <main id="main-content">{children}</main>
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
       </div>
 
       {/* Mobile Bottom Tab Bar */}

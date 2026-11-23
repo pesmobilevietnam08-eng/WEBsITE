@@ -162,7 +162,9 @@ export function SettingsPage() {
             </div>
             <p className={styles.hint}>
               Nếu giọng nghe còn máy móc, thử chọn giọng khác. Giọng có chữ Online, Natural hoặc
-              Google thường tự nhiên hơn. Chrome và Edge thường có giọng tốt nhất.
+              Google thường tự nhiên hơn nhưng sử dụng dịch vụ đọc văn bản trực tuyến của hãng trình
+              duyệt (có thể gửi nội dung câu hỏi kèm tên hiển thị). Nếu muốn hoàn toàn ngoại tuyến
+              không gửi văn bản ra ngoài, hãy chọn giọng cục bộ trên máy.
             </p>
           </>
         ) : (

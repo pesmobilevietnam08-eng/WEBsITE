@@ -36,9 +36,13 @@ export function has(u: string, w: string): number {
   return -1;
 }
 
+const MAX_LEV_LEN = 600;
+
 export function lev(a: string, b: string): number {
-  const m = a.length;
-  const n = b.length;
+  const sa = a.length > MAX_LEV_LEN ? a.slice(0, MAX_LEV_LEN) : a;
+  const sb = b.length > MAX_LEV_LEN ? b.slice(0, MAX_LEV_LEN) : b;
+  const m = sa.length;
+  const n = sb.length;
   const d: number[][] = Array.from({ length: m + 1 }, (_, i) => {
     const row = new Array<number>(n + 1).fill(0);
     row[0] = i;
@@ -55,7 +59,7 @@ export function lev(a: string, b: string): number {
     for (let j = 1; j <= n; j++) {
       const del = (prev[j] ?? 0) + 1;
       const ins = (cur[j - 1] ?? 0) + 1;
-      const sub = (prev[j - 1] ?? 0) + (a[i - 1] === b[j - 1] ? 0 : 1);
+      const sub = (prev[j - 1] ?? 0) + (sa[i - 1] === sb[j - 1] ? 0 : 1);
       cur[j] = Math.min(del, ins, sub);
     }
   }
@@ -63,10 +67,11 @@ export function lev(a: string, b: string): number {
 }
 
 export function fuzzy(u: string, w: string): number {
-  if (w.length < 4) return -1;
+  if (w.length < 4 || w.length > MAX_LEV_LEN) return -1;
+  const bounded = u.length > MAX_LEV_LEN ? u.slice(0, MAX_LEV_LEN) : u;
   for (const L of [w.length - 1, w.length, w.length + 1]) {
-    for (let i = 0; i + L <= u.length; i++) {
-      if (lev(u.slice(i, i + L), w) <= 1) return i;
+    for (let i = 0; i + L <= bounded.length; i++) {
+      if (lev(bounded.slice(i, i + L), w) <= 1) return i;
     }
   }
   return -1;

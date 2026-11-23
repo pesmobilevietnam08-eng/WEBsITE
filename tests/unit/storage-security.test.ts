@@ -36,6 +36,8 @@ describe('Security & Storage v3 (migration, XSS sanitization, backup checksum, p
     expect(validateExternalUrl(`javascript${':alert(1)'}`)).toBeNull();
     expect(validateExternalUrl('http://manabiman.io.vn/app/')).toBeNull();
     expect(validateExternalUrl('https://evil.example.com/phish')).toBeNull();
+    expect(validateExternalUrl('https://evil.com@manabiman.io.vn/app/')).toBeNull();
+    expect(validateExternalUrl('https://manabiman.io.vn:8443/app/')).toBeNull();
     expect(validateExternalUrl('data:text/html,<script>alert(1)</script>')).toBeNull();
   });
 
@@ -72,6 +74,21 @@ describe('Security & Storage v3 (migration, XSS sanitization, backup checksum, p
     window.localStorage.setItem(STORAGE_KEY_V3, '{not valid json');
     expect(loadStorageState().schema).toBe(3);
     expect(migrateFromLegacyV2('{"__proto__":{"polluted":true}}')).toBeNull();
+
+    // M-01: sliced/trimmed prototype keys in legacy v2 must be dropped cleanly
+    const sneakyLegacy = JSON.stringify({
+      'R:__proto__': { n: 1, best: 100, last: 'x' },
+      'R:constructor': { n: 1, best: 100, last: 'x' },
+      ' __proto__ ': { n: 1, best: 100, last: 'x' },
+      ' constructor ': { n: 1, best: 100, last: 'x' },
+      'B1-T01-1': { n: 2, best: 80, last: 'ロシアじんです' },
+    });
+    const migrated = migrateFromLegacyV2(sneakyLegacy);
+    expect(migrated).not.toBeNull();
+    expect(Object.getPrototypeOf(migrated!.attempts)).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(migrated!.readAttempts)).toBe(Object.prototype);
+    expect(Object.keys(migrated!.readAttempts)).toEqual([]);
+    expect(Object.keys(migrated!.attempts)).toEqual(['B1-T01-1']);
   });
 
   it('exports and imports valid SHA-256 progress backup cleanly', async () => {
@@ -109,6 +126,31 @@ describe('Security & Storage v3 (migration, XSS sanitization, backup checksum, p
     const huge = `{"a":"${'x'.repeat(2_000_000)}"}`;
     const hugeRes = await importProgressJson(huge);
     expect(hugeRes.ok).toBe(false);
+
+    // M-03: Deeply nested JSON (5,000 levels) rejected before stack overflow
+    const deepNested = '{"a":'.repeat(5000) + '1' + '}'.repeat(5000);
+    expect(() => safeJsonParse(deepNested)).toThrow(/lồng nhau/);
+    const deepRes = await importProgressJson(deepNested);
+    expect(deepRes.ok).toBe(false);
+
+    // M-02: Too many record entries (> 300) rejected by schema
+    const floodedState = createDefaultState('2026-11-24T00:00:00.000Z');
+    for (let i = 0; i < 305; i++) {
+      floodedState.attempts[`Q-${i}`] = {
+        best: 100,
+        last: 'ok',
+        count: 1,
+        history: [],
+      };
+    }
+    const floodedEnvelope = JSON.stringify({
+      format: 'jpd113-backup',
+      version: 3,
+      exportedAt: '2026-11-24T00:00:00.000Z',
+      sha256: 'a'.repeat(64),
+      payload: floodedState,
+    });
+    expect((await importProgressJson(floodedEnvelope)).ok).toBe(false);
 
     // Unknown extra field in strict schema
     const badSchema = JSON.stringify({

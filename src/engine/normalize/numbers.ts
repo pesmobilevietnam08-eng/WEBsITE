@@ -37,7 +37,7 @@ export function parseKanjiNumeralString(m: string): number {
 
 export function kanjiNum(t: string): string {
   return t.replace(
-    /(?<!\d)([〇一二三四五六七八九十百千万]+)(?=月|日|歳|才|さい|がつ|にち|時|分|階|円|つ|ドル|ドン)/g,
+    /(?<!\d)([〇一二三四五六七八九十百千万]{1,12})(?=月|日|歳|才|さい|がつ|にち|時|分|階|円|つ|ドル|ドン)/g,
     (m) => String(parseKanjiNumeralString(m)),
   );
 }

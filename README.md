@@ -1,31 +1,54 @@
-# JPD113 Speaking Trainer — gói project cho Antigravity
+# JPD113 Speaking Trainer
 
-Đây là **gói đặc tả + dữ liệu** để AI agent (Antigravity) dựng lại ứng dụng ôn thi nói JPD113 từ đầu theo chuẩn kỹ sư: giao diện đẹp, code sạch, bảo mật chặt, test đầy đủ.
+Ứng dụng web luyện thi nói tiếng Nhật môn **JPD113** (luyện đọc thành tiếng, vấn đáp có tranh/không tranh, thi thử có giới hạn thời gian) — chạy hoàn toàn trên máy người dùng, hỗ trợ **PWA ngoại tuyến**, bảo mật chặt (CSP + Trusted Types) và không theo dõi người học.
 
-## Cách dùng (5 bước)
-1. Giải nén, mở thư mục `jpd113-pro` bằng Antigravity (File → Open Folder).
-2. Mở **Agent Manager**, tạo workspace trỏ vào thư mục này.
-3. Mở file `KICKOFF_PROMPT.md`, copy toàn bộ nội dung dán vào agent. Chọn chế độ có **Planning** để agent lập kế hoạch trước, bạn duyệt rồi mới chạy.
-4. Cho agent làm lần lượt từng Milestone trong `docs/07-ROADMAP.md`. Sau mỗi Milestone, bảo agent chạy `npm run check` và cho bạn xem ảnh chụp màn hình.
-5. Khi xong, dán prompt trong `docs/09-SECURITY-REVIEW-PROMPT.md` để một agent khác kiểm tra bảo mật độc lập.
+## Cài đặt & Chạy phát triển
 
-## Cấu trúc
+Yêu cầu: **Node.js ≥ 22** và **npm ≥ 10**.
+
+```bash
+# Cài phụ thuộc (tôn trọng ignore-scripts=true trong .npmrc)
+npm ci --ignore-scripts
+
+# Chạy môi trường phát triển (tự tách dữ liệu & tối ưu ảnh trước khi khởi chạy Vite)
+npm run dev
+
+# Build bản production (ra thư mục dist/)
+npm run build
+
+# Xem trước bản production kèm đầy đủ CSP & security headers từ public/_headers
+npm run preview
 ```
-AGENTS.md                  Luật chung cho agent (đọc đầu tiên)
-KICKOFF_PROMPT.md          Prompt khởi động dán vào Antigravity
-.agent/rules/              Rule tự nạp cho Antigravity
-.agent/workflows/          Workflow dùng bằng lệnh /tên
-docs/                      PRD, kiến trúc, design system, bảo mật, schema, engine, roadmap, nghiệm thu
-data/                      Dữ liệu đã tách khỏi HTML (JSON) — KHÔNG sửa nội dung
-assets/images/pictures/    28 ảnh tình huống đã tách khỏi base64
-legacy/                    File gốc + phần logic JS gốc để tham chiếu khi port
+
+## Lệnh kiểm thử & bảo mật
+
+```bash
+npm run check          # validate:data + lint + typecheck + unit/golden test + build + headers + contrast + static security
+npm run test:coverage  # Vitest + báo cáo coverage engine
+npm run test:e2e       # Playwright E2E + axe-core + PWA offline + XSS/import tests (desktop & mobile)
+npm run audit          # npm audit --audit-level=high + headers + contrast + static security
+npm run sbom           # Sinh CycloneDX SBOM (sbom.cdx.json)
+npm run validate:data  # Kiểm tra Zod schema + đối chiếu chéo dữ liệu nguồn
 ```
 
-## Số liệu bản gốc
-- 1 file HTML 1,29 MB (ảnh nhúng base64, CSS ~1000 dòng, JS ~5.900 dòng).
-- Bài 1–3: 31 câu có tranh, 32 câu không tranh, 44 đoạn luyện đọc.
-- Engine chấm: chuẩn hoá kanji/số/giờ/tiền → kana, so khớp mờ (Levenshtein), thang trừ điểm R0–R11.
-- Lưu tiến độ bằng `localStorage`, đọc mẫu bằng `speechSynthesis`, nhận giọng bằng Web Speech API.
+## Kiến trúc thư mục
+
+```
+src/
+  app/            AppProvider, AppShell (sidebar desktop / bottom tabs mobile), PWA Trusted Types SW
+  engine/         Lõi chấm điểm thuần TypeScript (không đụng DOM/React/localStorage), khớp 100% 1.818 golden tests
+  data/           Zod schema, adapter chuẩn hóa, lazy loaders theo từng Bài, alt text tranh tình huống
+  storage/        Lưu trữ phiên bản hóa (jpd113.v3), migrate không phá hủy từ rbl-jpd113-web-v2, backup SHA-256
+  speech/         TTS tiếng Nhật, STT nhận giọng có xin quyền minh bạch, phát hiện in-app browser
+  ui/             Design System Washi & Sumi (tokens.css, Button, Tabs, ScoreRing, MicButton, DiffText, FeedbackLadder, Ruby…)
+  features/       dashboard/, read/, qa/, exam/, settings/, promo/ (mặc định TẮT), shared/
+  lib/            Sanitize tên, chống prototype pollution, whitelist URL ngoài, SHA-256, streak & spaced repetition
+data/             JSON nguồn bất biến (KHÔNG sửa nội dung)
+assets/           28 ảnh PNG nguồn gốc
+public/           _headers (CSP chặt + HSTS/COOP/CORP), robots.txt, icons PWA
+tests/            golden/ (1.818 ca), unit/, e2e/ (Playwright + axe-core)
+docs/             PRD, kiến trúc, design system, bảo mật, DATA-REPORT, DECISIONS, DEPLOY, ACCESSIBILITY-AUDIT, SECURITY-AUDIT
+```
 
 ## Lưu ý bản quyền nội dung
-File gốc có khối quảng cáo/liên kết tới dịch vụ bên thứ ba (JPDspeak – manabiman.io.vn) và dữ liệu đề có thể không phải do bạn tự biên soạn. Bản mới tách khối đó thành module tuỳ chọn, mặc định **tắt**. Hãy chắc bạn có quyền dùng nội dung trước khi công khai.
+Dữ liệu đề luyện trong `data/` và ảnh trong `assets/images/pictures/` được giữ nguyên từ tệp gốc (`legacy/index.original.html`). Khối quảng bá bên thứ ba (JPDspeak – `manabiman.io.vn`) đã tách riêng thành module tuỳ chọn và **mặc định tắt**. Hãy đảm bảo bạn có quyền sử dụng nội dung đề trước khi công khai trên tên miền thật.

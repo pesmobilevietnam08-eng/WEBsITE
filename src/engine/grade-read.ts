@@ -324,6 +324,9 @@ export function readNorm(
     s = s.slice(0, MAX_READ_INPUT_LENGTH);
   }
   s = s.normalize('NFKC');
+  if (s.length > MAX_READ_INPUT_LENGTH) {
+    s = s.slice(0, MAX_READ_INPUT_LENGTH);
+  }
 
   const voc: [string, string][] = BASE_VOC.map(([k, v]) => [k, v]);
   if (cfg.vx.length > 0) {
@@ -364,7 +367,7 @@ export function readNorm(
     }
   }
 
-  s = s.replace(/([一二三四五六七八九十]+)(?=人)/g, (m) => {
+  s = s.replace(/([一二三四五六七八九十]{1,12})(?=人)/g, (m) => {
     let v = 0;
     let cur = 0;
     for (const c of m) {
@@ -382,7 +385,8 @@ export function readNorm(
   s = s.replace(/([ァ-ヶー])人/g, '$1じん').replace(/こく人/g, 'こくじん');
   s = norm(s, MAX_READ_INPUT_LENGTH);
   const rs = p.ref.map((t) => t.c).join('');
-  return lenFix(rs.includes('はたち') ? s : s.replace(/はたち/g, 'にじゅっさい'));
+  const out = lenFix(rs.includes('はたち') ? s : s.replace(/はたち/g, 'にじゅっさい'));
+  return out.length > MAX_READ_INPUT_LENGTH ? out.slice(0, MAX_READ_INPUT_LENGTH) : out;
 }
 
 export function gradeRead(

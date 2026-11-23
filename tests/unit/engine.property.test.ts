@@ -91,7 +91,13 @@ describe('Engine property-based & ReDoS safety tests', () => {
       '😀🔥🇯🇵\u202E<img src=x onerror=alert(1)>'.repeat(300),
       'はははははわわわわわえええええおおおおお'.repeat(500),
       '\u0000\u0007\uFEFF\u200B'.repeat(2000),
+      '\uFDFA'.repeat(2000),
+      '99999999円'.repeat(300),
     ];
+
+    // M-04: NFKC & numeric expansions must stay strictly bounded <= 500 (QA)
+    expect(norm('\uFDFA'.repeat(500)).length).toBeLessThanOrEqual(500);
+    expect(norm('99999999円'.repeat(200)).length).toBeLessThanOrEqual(500);
 
     const start = performance.now();
     for (const bad of adversarialInputs) {

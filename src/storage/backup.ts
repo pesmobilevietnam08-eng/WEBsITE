@@ -1,8 +1,14 @@
 import { canonicalJsonStringify, sha256Hex } from '../lib/hash';
-import { PrototypePollutionError, safeJsonParse, sanitizeLearnerName } from '../lib/sanitize';
+import {
+  JsonDepthError,
+  PrototypePollutionError,
+  safeJsonParse,
+  sanitizeLearnerName,
+} from '../lib/sanitize';
 import {
   BackupEnvelopeSchema,
   MAX_IMPORT_BYTES,
+  MAX_STORAGE_BYTES,
   StorageV3Schema,
   type BackupEnvelope,
   type StorageV3,
@@ -51,6 +57,12 @@ export async function importProgressJson(rawText: string): Promise<ImportResult>
         error: 'Tệp chứa khóa không an toàn (__proto__ / constructor / prototype) và đã bị chặn.',
       };
     }
+    if (err instanceof JsonDepthError) {
+      return {
+        ok: false,
+        error: 'Tệp JSON có cấu trúc lồng nhau quá sâu và đã bị chặn.',
+      };
+    }
     return { ok: false, error: 'Tệp không phải định dạng JSON hợp lệ.' };
   }
 
@@ -76,6 +88,14 @@ export async function importProgressJson(rawText: string): Promise<ImportResult>
     name: sanitizeLearnerName(envelope.payload.name),
     updatedAt: new Date().toISOString(),
   };
+
+  const payloadBytes = new TextEncoder().encode(JSON.stringify(sanitized)).byteLength;
+  if (payloadBytes > MAX_STORAGE_BYTES) {
+    return {
+      ok: false,
+      error: 'Dữ liệu tiến độ vượt quá giới hạn lưu trữ cục bộ (900 KB) và không thể khôi phục.',
+    };
+  }
 
   return { ok: true, data: sanitized };
 }

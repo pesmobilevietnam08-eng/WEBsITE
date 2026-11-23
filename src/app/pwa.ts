@@ -12,23 +12,36 @@ interface TrustedTypesWindow {
 }
 
 let swPolicy: { createScriptURL: (input: string) => unknown } | null = null;
+let controllerChangeListenerBound = false;
+
+/**
+ * Eagerly initializes the narrow `jpd113-sw` Trusted Types policy at app boot
+ * so only the exact same-origin `./sw.js` URL can ever be registered as a Service Worker.
+ */
+export function initTrustedSwPolicy(): void {
+  if (typeof window === 'undefined' || swPolicy) return;
+  const tt = (window as unknown as TrustedTypesWindow).trustedTypes;
+  if (!tt) return;
+  try {
+    swPolicy = tt.createPolicy('jpd113-sw', {
+      createScriptURL: (input: string) => {
+        if (input !== './sw.js') {
+          throw new Error('Blocked untrusted Service Worker URL');
+        }
+        return input;
+      },
+    });
+  } catch {
+    // Policy already exists or Trusted Types unavailable
+  }
+}
 
 function createTrustedSwUrl(url: string): string | URL {
-  if (url !== './sw.js' && url !== '/sw.js') {
+  if (url !== './sw.js') {
     throw new Error('Blocked untrusted Service Worker URL');
   }
-  const tt = (window as unknown as TrustedTypesWindow).trustedTypes;
-  if (tt) {
-    if (!swPolicy) {
-      swPolicy = tt.createPolicy('jpd113-sw', {
-        createScriptURL: (input: string) => {
-          if (input !== './sw.js' && input !== '/sw.js') {
-            throw new Error('Blocked untrusted Service Worker URL');
-          }
-          return input;
-        },
-      });
-    }
+  initTrustedSwPolicy();
+  if (swPolicy) {
     return swPolicy.createScriptURL(url) as string;
   }
   return url;
@@ -44,6 +57,19 @@ export function registerPwaServiceWorker(
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
   if (!import.meta.env.PROD) return;
 
+  initTrustedSwPolicy();
+
+  let awaitingActivation = false;
+  let reloading = false;
+  if (!controllerChangeListenerBound) {
+    controllerChangeListenerBound = true;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!awaitingActivation || reloading) return;
+      reloading = true;
+      window.location.reload();
+    });
+  }
+
   const doRegister = () => {
     const swUrl = createTrustedSwUrl('./sw.js');
     navigator.serviceWorker
@@ -52,8 +78,8 @@ export function registerPwaServiceWorker(
         const notifyWaiting = (worker: ServiceWorker) => {
           onUpdateAvailable({
             applyUpdate: () => {
+              awaitingActivation = true;
               worker.postMessage({ type: 'SKIP_WAITING' });
-              window.location.reload();
             },
           });
         };

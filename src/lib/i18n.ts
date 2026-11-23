@@ -15,7 +15,7 @@ export const UI_STRINGS = {
     disclaimerQa:
       'Điểm và phản hồi do máy ước tính từ chữ nhận được để em tự luyện. Ngữ điệu không được chấm. Kết quả thi thật do giám khảo chấm.',
     speechPrivacyNotice:
-      'Lưu ý quyền riêng tư giọng nói: Khi bấm nút Micro, trình duyệt (Chrome/Edge) sử dụng Web Speech API và có thể gửi âm thanh tới máy chủ của hãng trình duyệt để chuyển giọng thành chữ. Ứng dụng này không thu, không lưu và không gửi âm thanh đi bất kỳ đâu khác. Em có thể bật chế độ “Chỉ gõ” bất kỳ lúc nào.',
+      'Lưu ý quyền riêng tư giọng nói: Khi bấm nút Micro, trình duyệt (Chrome/Edge) sử dụng Web Speech API và có thể gửi âm thanh tới máy chủ của hãng trình duyệt để chuyển giọng thành chữ; tương tự, giọng đọc TTS có nhãn Online/Natural/Google dùng dịch vụ trực tuyến của hãng trình duyệt. Ứng dụng này không thu, không lưu và không gửi âm thanh hay dữ liệu đi bất kỳ đâu khác. Em có thể chọn giọng đọc cục bộ hoặc bật chế độ “Chỉ gõ” bất kỳ lúc nào.',
     offlineTitle: 'Đang chạy ngoại tuyến',
     offlineBody:
       'Toàn bộ đề luyện đọc, vấn đáp và tranh tình huống đã sẵn sàng trên máy. Chức năng gõ Romaji/Kana hoạt động bình thường khi không có mạng.',

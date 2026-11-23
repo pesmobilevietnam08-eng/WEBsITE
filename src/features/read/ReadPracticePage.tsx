@@ -547,6 +547,7 @@ export function ReadPracticePage() {
               className={styles.textarea}
               lang="ja"
               value={answer}
+              maxLength={3000}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="Bấm Đọc rồi đọc cả đoạn. Hoặc gõ cách đọc bằng hiragana/katakana hoặc Romaji. Xong bấm Chấm bài đọc."
               autoComplete="off"

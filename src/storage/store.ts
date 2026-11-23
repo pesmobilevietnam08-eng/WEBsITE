@@ -93,6 +93,13 @@ export async function clearAllUserData(): Promise<void> {
   } catch {
     // ignore cache clear failures
   }
+  try {
+    if (typeof indexedDB !== 'undefined' && typeof indexedDB.deleteDatabase === 'function') {
+      indexedDB.deleteDatabase('workbox-expiration');
+    }
+  } catch {
+    // ignore IndexedDB cleanup failures in restricted modes
+  }
 }
 
 function appendActivityDay(days: readonly string[], now: Date): string[] {

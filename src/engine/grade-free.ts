@@ -206,11 +206,14 @@ export function gradeFree(
   } else if (c === 'L04') {
     r = [/(さい|はたち)/.test(u), /(さい|はたち)です$/.test(u)];
   } else if (c === 'L05') {
-    r = [/がつ/.test(u) && DAYW.test(u), /がつ.*です$/.test(u)];
+    r = [/がつ/.test(u) && DAYW.test(u), u.includes('がつ') && u.endsWith('です')];
   } else if (c === 'L06') {
     r = [anyIn(u, HOBBY), (anyIn(u, HOBBY) || /しゅみ/.test(u)) && /です$/.test(u)];
   } else if (c === 'L07') {
-    r = [/(かい|がい|ここ|そこ|あそこ)/.test(u), /(かい|がい|ここ|そこ|あそこ).*です$/.test(u)];
+    r = [
+      /(かい|がい|ここ|そこ|あそこ)/.test(u),
+      /(かい|がい|ここ|そこ|あそこ)/.test(u) && u.endsWith('です'),
+    ];
   } else if (c === 'L08') {
     r = [/(えん|どる|どん)/.test(u), /(えん|どる|どん)です$/.test(u)];
   } else if (c === 'L09') {

@@ -205,6 +205,23 @@ for (const b of cfg.bais) {
     usedPics.set(q.pic, (usedPics.get(q.pic) || 0) + 1);
     if (!pics.has(q.pic)) errors.push(`Missing picture file for ${q.id}: ${q.pic}.png`);
     if (q.j.accept.length === 0) errors.push(`Empty j.accept in ${q.id}`);
+    if (q.j.rep) {
+      for (const rule of q.j.rep) {
+        if (rule.startsWith('re:')) {
+          const pattern = rule.slice(3);
+          if (pattern.length > 120 || /\([^)]*[+*][^)]*\)[+*]/.test(pattern)) {
+            errors.push(`Potentially unsafe regex in ${q.id}.j.rep: ${rule}`);
+          } else {
+            try {
+              // eslint-disable-next-line security/detect-non-literal-regexp -- build-time syntax check of static data regex after nested-quantifier guard
+              new RegExp(pattern);
+            } catch {
+              errors.push(`Invalid regex in ${q.id}.j.rep: ${rule}`);
+            }
+          }
+        }
+      }
+    }
     for (const [k, v] of Object.entries(q)) {
       if (typeof v === 'string') checkText(v, `${q.id}.${k}`);
     }

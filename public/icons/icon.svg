@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JPD113 Speaking Trainer">
+  <rect width="512" height="512" rx="108" fill="#F6F3EC"/>
+  <rect x="36" y="36" width="440" height="440" rx="82" fill="none" stroke="#D9D3C4" stroke-width="10"/>
+  <rect x="76" y="76" width="360" height="360" rx="60" fill="#0A6E72"/>
+  <circle cx="348" cy="156" r="46" fill="#C0262D"/>
+  <circle cx="348" cy="156" r="34" fill="none" stroke="#F6F3EC" stroke-width="4" stroke-dasharray="6 4"/>
+  <path d="M168 184h104v28h-44v136h-32V212h-28z" fill="#F6F3EC"/>
+  <path d="M276 232h68c24 0 40 16 40 40 0 18-10 31-26 36 20 5 32 19 32 39 0 28-20 47-50 47h-64v-28h60c14 0 22-8 22-20s-8-20-24-20h-40v-26h38c14 0 22-7 22-18s-8-18-22-18h-56z" fill="#F6F3EC"/>
+</svg>

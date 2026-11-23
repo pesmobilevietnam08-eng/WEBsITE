@@ -1,0 +1,133 @@
+:root {
+  /* Palette — Washi & Sumi (Light) */
+  --bg: #f6f3ec;
+  --surface: #ffffff;
+  --surface-2: #efebe1;
+  --ink: #15213b;
+  --ink-2: #4a5775;
+  --line: #d9d3c4;
+  --line-strong: #857d6b;
+
+  --accent: #0a6e72;
+  --accent-hover: #07575a;
+  --accent-ink: #ffffff;
+  --accent-soft: #dff0ee;
+
+  --hanko: #c0262d;
+  --hanko-ink: #ffffff;
+  --hanko-soft: #fce8e7;
+
+  --kata: #1b56b5;
+  --kata-soft: #e5eefc;
+
+  --good: #156b3b;
+  --good-soft: #dcf2e5;
+  --warn: #7d4f00;
+  --warn-soft: #fdf0d2;
+  --bad: #b3261e;
+  --bad-soft: #fbe3e1;
+
+  --mark: #ffe08a;
+  --mark-ink: #3d2b00;
+
+  /* Typography */
+  --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+  --jp-scale: 1;
+
+  --text-xs: 0.8125rem; /* 13px */
+  --text-sm: 0.9375rem; /* 15px */
+  --text-md: 1.0625rem; /* 17px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 2rem; /* 32px */
+  --text-3xl: 2.75rem; /* 44px */
+
+  /* Spacing (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Elevation (2 subtle levels) */
+  --shadow-1: 0 1px 2px rgba(21, 33, 59, 0.06), 0 1px 1px rgba(21, 33, 59, 0.03);
+  --shadow-2: 0 8px 24px -10px rgba(21, 33, 59, 0.14), 0 2px 6px rgba(21, 33, 59, 0.05);
+
+  /* Motion */
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Layout */
+  --sidebar-w: 248px;
+  --bottom-nav-h: 68px;
+  --content-max: 960px;
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f1420;
+  --surface: #171e2e;
+  --surface-2: #1f2840;
+  --ink: #e9eef9;
+  --ink-2: #a9b6d0;
+  --line: #2b3a58;
+  --line-strong: #5e7299;
+
+  --accent: #5fd0c9;
+  --accent-hover: #7addd7;
+  --accent-ink: #06282a;
+  --accent-soft: #13363c;
+
+  --hanko: #ff8f87;
+  --hanko-ink: #2b080a;
+  --hanko-soft: #3d1c20;
+
+  --kata: #8eb8ff;
+  --kata-soft: #192c4f;
+
+  --good: #62d996;
+  --good-soft: #12362a;
+  --warn: #f2c55c;
+  --warn-soft: #3a2e10;
+  --bad: #ff8f87;
+  --bad-soft: #431a18;
+
+  --mark: #b88a00;
+  --mark-ink: #0f1420;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-2: 0 12px 28px -10px rgba(0, 0, 0, 0.48);
+
+  color-scheme: dark;
+}
+
+/* Furigana global visibility toggle without re-rendering <ruby> trees */
+:root.hide-furigana ruby rt {
+  display: none;
+}
+
+/* Japanese font scale presets */
+:root[data-jp-size='sm'] {
+  --jp-scale: 0.92;
+}
+:root[data-jp-size='md'] {
+  --jp-scale: 1;
+}
+:root[data-jp-size='lg'] {
+  --jp-scale: 1.15;
+}
+:root[data-jp-size='xl'] {
+  --jp-scale: 1.3;
+}

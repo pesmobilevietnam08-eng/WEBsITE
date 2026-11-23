@@ -1,0 +1,91 @@
+.mic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 48px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.mic:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.mic:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+}
+
+.listening {
+  background: var(--hanko);
+  border-color: var(--hanko);
+  color: var(--hanko-ink);
+  box-shadow: 0 0 0 4px var(--hanko-soft);
+}
+
+.listening:hover:not(:disabled) {
+  background: var(--hanko);
+  border-color: var(--hanko);
+  color: var(--hanko-ink);
+}
+
+.error {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.large {
+  min-height: 54px;
+  padding: 12px 26px;
+  font-size: var(--text-md);
+}
+
+.waves {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+
+.bar {
+  display: block;
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: currentColor;
+  animation: wave 850ms ease-in-out infinite;
+}
+
+.bar2 {
+  animation-delay: 140ms;
+  height: 15px;
+}
+
+.bar3 {
+  animation-delay: 280ms;
+  height: 11px;
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1.25);
+  }
+}

@@ -1,0 +1,95 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.item {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.itemActive {
+  border-color: var(--hanko);
+  background: var(--hanko-soft);
+}
+
+.trigger {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font-weight: 600;
+}
+
+.trigger:hover {
+  background: var(--surface-2);
+}
+
+.code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.itemActive .code {
+  background: var(--hanko);
+  color: var(--hanko-ink);
+}
+
+.title {
+  flex: 1;
+  font-size: var(--text-sm);
+}
+
+.pen {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--bad);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.body {
+  padding: 0 14px 12px 14px;
+  border-top: 1px dashed var(--line);
+  padding-top: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+.sample {
+  font-family: var(--font-jp);
+  color: var(--ink);
+  background: var(--surface-2);
+  padding: 6px 10px;
+  border-radius: 6px;
+}

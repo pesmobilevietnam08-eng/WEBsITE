@@ -1,0 +1,72 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  font-size: var(--text-xs);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.valueText {
+  font-weight: 700;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  width: 100%;
+  height: 10px;
+  appearance: none;
+  border: 0;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.bar::-webkit-progress-bar {
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+}
+
+.bar::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width var(--dur-base) var(--ease-out);
+}
+
+.bar::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+}
+
+.hanko::-webkit-progress-value {
+  background: var(--hanko);
+}
+.hanko::-moz-progress-bar {
+  background: var(--hanko);
+}
+
+.kata::-webkit-progress-value {
+  background: var(--kata);
+}
+.kata::-moz-progress-bar {
+  background: var(--kata);
+}
+
+.good::-webkit-progress-value {
+  background: var(--good);
+}
+.good::-moz-progress-bar {
+  background: var(--good);
+}

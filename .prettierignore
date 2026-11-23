@@ -1,0 +1,9 @@
+dist
+coverage
+legacy
+data
+docs/baseline
+docs/screenshots
+src/data/generated
+package-lock.json
+sbom.cdx.json

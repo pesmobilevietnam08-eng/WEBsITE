@@ -1,0 +1,91 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.svg {
+  flex: none;
+  transform: rotate(-90deg);
+}
+
+.track {
+  fill: none;
+  stroke: var(--surface-2);
+}
+
+.arc {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--dur-base) var(--ease-out);
+}
+
+.good {
+  stroke: var(--good);
+  color: var(--good);
+}
+
+.warn {
+  stroke: var(--warn);
+  color: var(--warn);
+}
+
+.bad {
+  stroke: var(--bad);
+  color: var(--bad);
+}
+
+.ringBox {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+}
+
+.ringBoxSm {
+  width: 68px;
+  height: 68px;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+}
+
+.value {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ringBoxSm .value {
+  font-size: var(--text-md);
+}
+
+.max {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.sub {
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+}

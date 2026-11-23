@@ -1,0 +1,54 @@
+.diff {
+  font-family: var(--font-jp);
+  font-size: calc(var(--text-lg) * var(--jp-scale));
+  line-height: 2;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.match {
+  color: var(--ink);
+}
+
+.wrong {
+  color: var(--bad);
+  background: var(--bad-soft);
+  text-decoration: underline wavy var(--bad);
+  text-underline-offset: 4px;
+  border-radius: 4px;
+  padding: 0 2px;
+  font-weight: 700;
+}
+
+.missing {
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-bottom: 2px dashed var(--warn);
+  border-radius: 4px;
+  padding: 0 3px;
+  font-weight: 700;
+}
+
+.extra {
+  color: var(--kata);
+  background: var(--kata-soft);
+  text-decoration: line-through;
+  border-radius: 4px;
+  padding: 0 2px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

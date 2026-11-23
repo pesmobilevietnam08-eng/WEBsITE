@@ -1,0 +1,74 @@
+{
+  "name": "jpd113-speaking-trainer",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Ứng dụng web luyện thi nói tiếng Nhật JPD113 offline — đọc thành tiếng, vấn đáp có tranh và không tranh.",
+  "scripts": {
+    "prepare:assets": "node scripts/prepare-assets.mjs",
+    "dev": "npm run prepare:assets && vite",
+    "build": "npm run prepare:assets && tsc -b && vite build",
+    "preview": "node scripts/preview-server.mjs",
+    "lint": "eslint .",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.mjs\"",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "validate:data": "node scripts/validate-data.mjs",
+    "check:headers": "node scripts/check-headers.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "check:security": "node scripts/check-security-static.mjs",
+    "check": "npm run validate:data && npm run lint && npm run typecheck && npm run test && npm run build && npm run check:headers && npm run check:contrast && npm run check:security",
+    "test:e2e": "playwright test",
+    "audit": "npm audit --audit-level=high && npm run check:headers && npm run check:contrast && npm run check:security",
+    "sbom": "cyclonedx-npm --output-file sbom.cdx.json --output-format JSON --spec-version 1.5"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "7.18.6",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@cyclonedx/cyclonedx-npm": "7.0.1",
+    "@eslint/js": "9.39.5",
+    "@fontsource/be-vietnam-pro": "5.3.0",
+    "@fontsource/noto-sans-jp": "5.3.1",
+    "@playwright/test": "1.65.1",
+    "@testing-library/jest-dom": "8.0.0",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.13",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "4.7.0",
+    "@vitest/coverage-v8": "5.1.1",
+    "eslint": "9.39.5",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-security": "4.2.1",
+    "fast-check": "4.11.0",
+    "globals": "17.14.0",
+    "jsdom": "31.0.1",
+    "lint-staged": "17.6.2",
+    "prettier": "3.10.1",
+    "sharp": "0.35.5",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.74.0",
+    "vite": "6.4.6",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.1.1"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --max-warnings=0",
+      "prettier --check"
+    ],
+    "src/**/*.css": [
+      "prettier --check"
+    ]
+  }
+}

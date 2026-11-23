@@ -1,0 +1,21 @@
+.ruby {
+  ruby-position: over;
+  ruby-align: center;
+}
+
+.rt {
+  font-size: 0.56em;
+  color: var(--ink-2);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.han {
+  border-bottom: 2px solid var(--hanko);
+  padding-bottom: 1px;
+}
+
+.kata {
+  color: var(--kata);
+  font-weight: 600;
+}

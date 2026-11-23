@@ -1,0 +1,14 @@
+.frame {
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--line);
+  background: #ffffff;
+  overflow: hidden;
+  padding: var(--sp-2);
+}
+
+.img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-sm);
+}

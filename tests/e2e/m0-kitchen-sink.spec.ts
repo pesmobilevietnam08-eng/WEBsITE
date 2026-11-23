@@ -45,9 +45,10 @@ test.describe('M0 Foundation — Kitchen Sink, CSP & Accessibility', () => {
       fullPage: true,
     });
 
-    // Toggle to dark mode & re-check axe
+    // Toggle to dark mode & wait for CSS transitions to settle before axe contrast audit
     await page.getByRole('button', { name: 'Chế độ tối' }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await page.waitForTimeout(250);
 
     const darkResults = await new AxeBuilder({ page }).analyze();
     const darkSerious = darkResults.violations.filter(

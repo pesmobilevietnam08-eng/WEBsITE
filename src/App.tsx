@@ -7,6 +7,12 @@ import { Card, ErrorBoundary, SkeletonGrid, ToastProvider } from './ui';
 const SettingsPage = lazy(() =>
   import('./features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
+const QaListPage = lazy(() =>
+  import('./features/qa/QaListPage').then((m) => ({ default: m.QaListPage })),
+);
+const QaPracticePage = lazy(() =>
+  import('./features/qa/QaPracticePage').then((m) => ({ default: m.QaPracticePage })),
+);
 const KitchenSinkPage = lazy(() =>
   import('./features/kitchen-sink/KitchenSinkPage').then((m) => ({ default: m.KitchenSinkPage })),
 );
@@ -47,15 +53,8 @@ export function App() {
                       />
                     }
                   />
-                  <Route
-                    path="/qa/*"
-                    element={
-                      <SectionPlaceholder
-                        title="Luyện vấn đáp"
-                        desc="Ngẫu nhiên, Có tranh (31 câu) và Không tranh (32 câu)."
-                      />
-                    }
-                  />
+                  <Route path="/qa" element={<QaListPage />} />
+                  <Route path="/qa/:id" element={<QaPracticePage />} />
                   <Route
                     path="/exam"
                     element={

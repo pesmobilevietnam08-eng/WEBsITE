@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useApp } from '../../app/AppContext';
 import {
   Banner,
   Button,
@@ -26,23 +27,22 @@ import styles from './KitchenSinkPage.module.css';
 
 export function KitchenSinkPage() {
   const { pushToast } = useToast();
+  const { state, resolvedTheme, updateSettings } = useApp();
   const [bai, setBai] = useState<number>(1);
   const [tab, setTab] = useState<'rand' | 'pic' | 'free'>('pic');
   const [micState, setMicState] = useState<MicState>('idle');
-  const [furigana, setFurigana] = useState(true);
   const [voice, setVoice] = useState('ja-JP-Nanami');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dark, setDark] = useState(() => document.documentElement.dataset.theme === 'dark');
+
+  const dark = resolvedTheme === 'dark';
+  const furigana = state.settings.furigana;
 
   const toggleTheme = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.dataset.theme = next ? 'dark' : 'light';
+    updateSettings({ theme: dark ? 'light' : 'dark' });
   };
 
   const toggleFurigana = (checked: boolean) => {
-    setFurigana(checked);
-    document.documentElement.classList.toggle('hide-furigana', !checked);
+    updateSettings({ furigana: checked });
   };
 
   return (

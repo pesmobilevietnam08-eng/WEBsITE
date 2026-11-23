@@ -1,4 +1,14 @@
-import { splitSpokenQuestion } from '../engine';
+function splitSpokenQuestionLocal(text: string): string[] {
+  return String(text)
+    .replace(/[「」]/g, '')
+    .split(/(?<=[。？?])/)
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .map((x) => {
+      const trimmed = x.replace(/[。？?]+$/, '');
+      return /か$/.test(trimmed) ? `${trimmed}？` : `${trimmed}。`;
+    });
+}
 
 export interface VoiceInfo {
   readonly voiceURI: string;
@@ -124,5 +134,5 @@ export function speakQuestion(
   text: string,
   options: Omit<SpeakSeqOptions, 'onStart'> = {},
 ): boolean {
-  return speakSeq(splitSpokenQuestion(text), options);
+  return speakSeq(splitSpokenQuestionLocal(text), options);
 }

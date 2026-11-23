@@ -44,7 +44,8 @@ export default defineConfig({
       },
       workbox: {
         cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,svg,png,webp,avif,webmanifest}'],
+        inlineWorkboxRuntime: true,
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,avif,woff2,webmanifest}'],
         globIgnores: ['**/node_modules/**/*', 'sw.js', 'workbox-*.js'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         runtimeCaching: [

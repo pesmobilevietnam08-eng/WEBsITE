@@ -44,7 +44,7 @@ export function registerPwaServiceWorker(
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
   if (!import.meta.env.PROD) return;
 
-  window.addEventListener('load', () => {
+  const doRegister = () => {
     const swUrl = createTrustedSwUrl('./sw.js');
     navigator.serviceWorker
       .register(swUrl as string, { scope: './' })
@@ -75,5 +75,11 @@ export function registerPwaServiceWorker(
       .catch(() => {
         // Fail gracefully if SW registration is blocked by browser privacy mode
       });
-  });
+  };
+
+  if (document.readyState === 'complete') {
+    doRegister();
+  } else {
+    window.addEventListener('load', doRegister, { once: true });
+  }
 }

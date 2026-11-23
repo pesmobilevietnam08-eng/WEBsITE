@@ -91,4 +91,40 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log('OK: public/_headers passed all CSP and security header checks.');
+const vercelPath = path.join(rootDir, 'vercel.json');
+if (fs.existsSync(vercelPath)) {
+  const vercelRaw = fs.readFileSync(vercelPath, 'utf8');
+  const vercelCfg = JSON.parse(vercelRaw);
+  const allHeaders = (vercelCfg.headers ?? []).flatMap((rule) =>
+    (rule.headers ?? []).map((h) => `${h.key}: ${h.value}`),
+  );
+  const joined = allHeaders.join('\n');
+  const vErrors = [];
+  for (const h of requiredHeaders) {
+    if (!joined.includes(h)) vErrors.push(`vercel.json missing required header: ${h}`);
+  }
+  const vCsp = allHeaders.find((h) => h.startsWith('Content-Security-Policy:'));
+  if (!vCsp) {
+    vErrors.push('vercel.json missing Content-Security-Policy');
+  } else {
+    for (const dir of requiredCspDirectives) {
+      if (!vCsp.includes(dir)) vErrors.push(`vercel.json missing CSP directive: ${dir}`);
+    }
+  }
+  for (const rx of forbiddenPatterns) {
+    if (rx.test(joined)) vErrors.push(`Forbidden pattern matched in vercel.json headers: ${rx}`);
+  }
+  if (!joined.includes('Cache-Control: public, max-age=31536000, immutable')) {
+    vErrors.push('vercel.json missing immutable cache header for hashed assets');
+  }
+  if (!joined.includes('Cache-Control: no-cache')) {
+    vErrors.push('vercel.json missing no-cache header for index.html / sw.js');
+  }
+  if (vErrors.length > 0) {
+    console.error('Vercel header security check FAILED:');
+    for (const err of vErrors) console.error('  -', err);
+    process.exit(1);
+  }
+}
+
+console.log('OK: public/_headers and vercel.json passed all CSP and security header checks.');

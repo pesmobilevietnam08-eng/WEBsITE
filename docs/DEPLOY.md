@@ -19,7 +19,17 @@ Thư mục đầu ra nằm tại `dist/` (bao gồm `index.html`, `sw.js`, `mani
 
 ## 2. Triển khai trên Static Host (khuyến nghị)
 
-### Phương án A — Cloudflare Pages (khuyến nghị để đạt A+ securityheaders.com)
+### Phương án A — Vercel (tự động qua GitHub hoặc Vercel CLI)
+Tệp `vercel.json` ở thư mục gốc đã cấu hình sẵn toàn bộ header bảo mật giống hệt `public/_headers` (CSP chặt `require-trusted-types-for 'script'`, HSTS preload, `X-Frame-Options: DENY`, `Permissions-Policy`, `COOP/CORP` và `Cache-Control` chuẩn cho PWA), đồng thời `.vercelignore` loại bỏ `legacy/` và `docs/`.
+1. Truy cập https://vercel.com/new → **Import Git Repository** → chọn repo GitHub (ví dụ `pesmobilevietnam08-eng/WEBsITE`).
+2. Vercel tự đọc `vercel.json`:
+   - **Framework Preset:** `Vite`
+   - **Install Command:** `npm ci --ignore-scripts`
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+3. Nhấn **Deploy** (hoặc chạy `vercel --prod` sau khi `vercel login && vercel link`). Mỗi lần push lên `main` sẽ tự build và phát hành bản mới.
+
+### Phương án B — Cloudflare Pages (đạt A+ securityheaders.com)
 1. Kết nối repo Git với Cloudflare Pages.
 2. Cấu hình build:
    - **Build command:** `npm ci --ignore-scripts && npm run build`
@@ -27,13 +37,13 @@ Thư mục đầu ra nằm tại `dist/` (bao gồm `index.html`, `sw.js`, `mani
    - **Node version:** `22`
 3. Cloudflare Pages **tự động đọc `dist/_headers`** (được copy từ `public/_headers`), tự kích hoạt toàn bộ CSP chặt (`require-trusted-types-for 'script'`), HSTS preload, `X-Frame-Options: DENY`, `Permissions-Policy`, `COOP/CORP` và cache `immutable`.
 
-### Phương án B — Netlify
+### Phương án C — Netlify
 1. Cấu hình build:
    - **Build command:** `npm ci --ignore-scripts && npm run build`
    - **Publish directory:** `dist`
 2. Netlify **tự động đọc `dist/_headers`** chuẩn theo cùng cú pháp Cloudflare Pages.
 
-### Phương án C — GitHub Pages (cần lưu ý header)
+### Phương án D — GitHub Pages (cần lưu ý header)
 - Ứng dụng dùng `HashRouter` nên hoạt động trực tiếp ngay cả khi đặt ở subpath (`/repo-name/`), chỉ cần cấu hình `base: './'` trong `vite.config.ts` nếu triển khai dưới subpath.
 - **Lưu ý bảo mật:** GitHub Pages **không hỗ trợ tệp `_headers`**. Để đạt điểm A+ trên Mozilla Observatory / securityheaders.com, hãy đặt Cloudflare proxy hoặc dùng Cloudflare Pages / Netlify.
 

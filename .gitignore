@@ -8,6 +8,7 @@ public/images/
 public/sw.js
 public/workbox-*.js
 sbom.cdx.json
+.vercel
 *.log
 *.tsbuildinfo
 .DS_Store

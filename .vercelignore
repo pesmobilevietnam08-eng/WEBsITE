@@ -1,0 +1,6 @@
+legacy/
+docs/
+playwright-report/
+test-results/
+coverage/
+sbom.cdx.json

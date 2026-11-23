@@ -78,8 +78,8 @@ export function QaResultPanel({
           <ScoreRing
             value={picResult.s}
             max={15}
-            label={`${picResult.p}% · ${label.text}`}
-            sublabel={`Quy đổi: ${picResult.s}/15 điểm`}
+            label={label.text}
+            sublabel={`${picResult.p}% (${picResult.s}/15 điểm)`}
           />
 
           {picResult.zero ? (
@@ -94,7 +94,7 @@ export function QaResultPanel({
 
           {/* Section 1 */}
           <div className={styles.section}>
-            <h2 className={styles.secTitle}>1 · Câu hỏi này hỏi gì</h2>
+            <h2 className={styles.secTitle}>Câu hỏi này hỏi gì</h2>
             <p className={styles.jpLine} lang="ja">
               {displaySpans.map((span, idx) =>
                 span.mark ? (
@@ -124,7 +124,7 @@ export function QaResultPanel({
 
           {/* Section 2 */}
           <div className={styles.section}>
-            <h2 className={styles.secTitle}>2 · Em đã nói</h2>
+            <h2 className={styles.secTitle}>Em đã nói</h2>
             <div className={styles.saidBox} lang="ja">
               {submittedText}
             </div>
@@ -132,7 +132,7 @@ export function QaResultPanel({
 
           {/* Section 3 */}
           <div className={styles.section}>
-            <h2 className={styles.secTitle}>3 · Điểm bị trừ và cách sửa</h2>
+            <h2 className={styles.secTitle}>Điểm bị trừ và cách sửa</h2>
             {picResult.s === 15 ? (
               <div className={styles.okBox}>
                 Không bị trừ điểm nào.{' '}
@@ -154,7 +154,7 @@ export function QaResultPanel({
 
           {/* Section 4 */}
           <div className={styles.section}>
-            <h2 className={styles.secTitle}>4 · Cách trả lời để được trọn điểm</h2>
+            <h2 className={styles.secTitle}>Cách trả lời trọn điểm</h2>
             <p>
               <strong>Mẫu câu:</strong>{' '}
               <span className="jp" lang="ja">

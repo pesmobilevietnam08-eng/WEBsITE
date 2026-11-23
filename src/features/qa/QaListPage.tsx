@@ -82,7 +82,6 @@ export function QaListPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.kicker}>JPD113 · Vấn đáp theo đề</p>
         <h1 className={styles.title}>Luyện vấn đáp</h1>
         <p className={styles.lead}>
           Nghe câu hỏi (chưa hiện chữ), trả lời bằng giọng nói hoặc gõ Romaji và nhận phân tích theo
@@ -163,7 +162,7 @@ export function QaListPage() {
       ) : lesson ? (
         tab === 'rand' ? (
           <Card ruled className={styles.randCard}>
-            <h2 className={styles.randTitle}>Câu hỏi ngẫu nhiên · Bài {bai}</h2>
+            <h2 className={styles.randTitle}>Câu hỏi ngẫu nhiên, Bài {bai}</h2>
             <p className={styles.lead}>
               Máy chọn một câu bất kỳ của Bài {bai} ({lesson.pic.length} câu có tranh và{' '}
               {lesson.free.length} câu không tranh). Em chưa biết trước dạng câu nào, giống như vào
@@ -188,7 +187,7 @@ export function QaListPage() {
             <div className={styles.grid}>
               {lesson.pic.map((q) => {
                 const rec = state.attempts[q.id];
-                const statusText = rec ? `Tốt nhất ${rec.best}% · ${rec.count} lần` : 'Chưa luyện';
+                const statusText = rec ? `Tốt nhất ${rec.best}% (${rec.count} lần)` : 'Chưa luyện';
                 const tone = !rec
                   ? 'new'
                   : rec.best >= 93

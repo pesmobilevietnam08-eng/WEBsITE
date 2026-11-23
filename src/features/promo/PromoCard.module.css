@@ -23,10 +23,8 @@
 }
 
 .badge {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--ink-2);
 }
 

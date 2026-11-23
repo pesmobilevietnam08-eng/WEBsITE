@@ -1,10 +1,7 @@
 .tabs {
   display: flex;
   gap: var(--sp-1);
-  padding: var(--sp-1);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-bottom: 1.5px solid var(--line);
 }
 
 .tab {
@@ -14,17 +11,17 @@
   justify-content: center;
   gap: var(--sp-2);
   min-height: 44px;
-  padding: 8px 12px;
-  border: 1.5px solid transparent;
-  border-radius: 10px;
+  padding: 8px 12px 10px;
+  border: 0;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
   background: transparent;
   color: var(--ink-2);
   font-weight: 600;
   font-size: var(--text-sm);
   transition:
-    background-color var(--dur-fast) var(--ease-out),
     color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out);
+    border-color var(--dur-fast) var(--ease-out);
 }
 
 .tab:hover {
@@ -32,10 +29,8 @@
 }
 
 .tab[aria-selected='true'] {
-  background: var(--surface);
-  color: var(--ink);
-  border-color: var(--line);
-  box-shadow: var(--shadow-1);
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .badge {
@@ -43,8 +38,8 @@
   align-items: center;
   justify-content: center;
   min-width: 22px;
-  padding: 1px 7px;
-  border-radius: var(--radius-pill);
+  padding: 1px 6px;
+  border-radius: 4px;
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
   background: var(--surface-2);

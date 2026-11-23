@@ -4,17 +4,7 @@ import { t } from '../../lib/i18n';
 import { MAX_LEARNER_NAME_LEN } from '../../lib/sanitize';
 import { speakSeq } from '../../speech';
 import { exportProgressJson, importProgressJson, type UserSettings } from '../../storage';
-import {
-  Banner,
-  Button,
-  Card,
-  Dialog,
-  Icon,
-  SegmentedControl,
-  Select,
-  Switch,
-  useToast,
-} from '../../ui';
+import { Banner, Button, Dialog, Icon, SegmentedControl, Select, Switch, useToast } from '../../ui';
 import styles from './SettingsPage.module.css';
 
 export function SettingsPage() {
@@ -102,199 +92,243 @@ export function SettingsPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.kicker}>Thiết lập cá nhân &amp; quyền riêng tư</p>
         <h1 className={styles.title}>Cài đặt</h1>
         <p className={styles.lead}>
-          Mọi tuỳ chọn và tiến độ học được lưu cục bộ trên máy này, không gửi lên máy chủ.
+          Mọi tuỳ chọn và tiến độ học nằm riêng trên thiết bị này, không đồng bộ lên máy chủ ngoài.
         </p>
       </header>
 
-      {/* Learner Name */}
-      <Card ruled className={styles.section}>
-        <h2 className={styles.sectionTitle}>Tên học viên</h2>
-        <div className={styles.field}>
-          <label htmlFor={nameInputId} className={styles.label}>
-            Tên dùng trong câu hỏi có 「Aさん」 (katakana, hiragana hoặc chữ Latin)
-          </label>
-          <div className={styles.inputRow}>
-            <input
-              id={nameInputId}
-              className={styles.input}
-              value={nameDraft}
-              maxLength={MAX_LEARNER_NAME_LEN * 2}
-              autoComplete="off"
-              onChange={(e) => setNameDraft(e.target.value)}
-              onBlur={() => setName(nameDraft)}
-            />
-            <Button variant="primary" onClick={handleSaveName}>
-              Lưu tên
-            </Button>
+      <div className={styles.ledger}>
+        {/* Learner Name */}
+        <section className={styles.rowSection}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Tên học viên</h2>
+            <p className={styles.hint}>
+              Thay cho chữ <span lang="ja">「Aさん」</span> khi máy đọc câu hỏi vấn đáp.
+            </p>
           </div>
-          <p className={styles.hint}>
-            Ví dụ: ミン、ナム、ハイ. Tối đa {MAX_LEARNER_NAME_LEN} ký tự hợp lệ; ký tự đặc biệt sẽ
-            tự động loại bỏ để bảo vệ an toàn.
-          </p>
-        </div>
-        <div className={styles.preview} lang="ja">
-          {state.name}さんの おなまえは なんですか。
-        </div>
-      </Card>
+          <div className={styles.rowMain}>
+            <div className={styles.field}>
+              <label htmlFor={nameInputId} className={styles.label}>
+                Tên dùng trong câu hỏi (katakana, hiragana hoặc chữ Latin)
+              </label>
+              <div className={styles.inputRow}>
+                <input
+                  id={nameInputId}
+                  className={styles.input}
+                  value={nameDraft}
+                  maxLength={MAX_LEARNER_NAME_LEN * 2}
+                  autoComplete="off"
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onBlur={() => setName(nameDraft)}
+                />
+                <Button variant="primary" onClick={handleSaveName}>
+                  Lưu tên
+                </Button>
+              </div>
+              <p className={styles.hint}>
+                Ví dụ: <span lang="ja">ミン、ナム、ハイ</span>. Tối đa {MAX_LEARNER_NAME_LEN} ký tự
+                hợp lệ; ký tự đặc biệt được tự động lọc bỏ.
+              </p>
+            </div>
+            <div className={styles.preview} lang="ja">
+              {state.name}さんの おなまえは なんですか。
+            </div>
+          </div>
+        </section>
 
-      {/* Japanese Voice */}
-      <Card className={styles.section}>
-        <h2 className={styles.sectionTitle}>Giọng đọc tiếng Nhật (TTS)</h2>
-        {voices.length > 0 ? (
-          <>
-            <Select
-              label="Chọn giọng đọc"
-              value={activeVoice?.voiceURI ?? ''}
-              onChange={(val) => updateSettings({ voiceURI: val })}
-              options={voices.map((v) => ({ value: v.voiceURI, label: `${v.name} (${v.lang})` }))}
+        {/* Japanese Voice */}
+        <section className={styles.rowSection}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Giọng đọc tiếng Nhật</h2>
+            <p className={styles.hint}>Dùng để phát câu hỏi vấn đáp và đọc mẫu đoạn văn.</p>
+          </div>
+          <div className={styles.rowMain}>
+            {voices.length > 0 ? (
+              <>
+                <Select
+                  label="Chọn giọng đọc"
+                  value={activeVoice?.voiceURI ?? ''}
+                  onChange={(val) => updateSettings({ voiceURI: val })}
+                  options={voices.map((v) => ({
+                    value: v.voiceURI,
+                    label: `${v.name} (${v.lang})`,
+                  }))}
+                />
+                <div className={styles.row}>
+                  <Button
+                    variant="secondary"
+                    icon={<Icon name="speaker" size={18} />}
+                    onClick={handleTestVoice}
+                  >
+                    Nghe thử giọng đọc
+                  </Button>
+                </div>
+                <p className={styles.hint}>
+                  Giọng có chữ Online, Natural hoặc Google thường tự nhiên hơn nhưng sử dụng dịch vụ
+                  đọc trực tuyến của hãng trình duyệt (có thể gửi nội dung câu hỏi kèm tên hiển
+                  thị). Chọn giọng cục bộ nếu muốn ngoại tuyến hoàn toàn.
+                </p>
+              </>
+            ) : (
+              <Banner tone="warn" title="Máy này chưa có giọng đọc tiếng Nhật">
+                Em có thể mở bằng Chrome hoặc Edge, hoặc cài thêm gói giọng tiếng Nhật trong cài đặt
+                hệ điều hành. Màn hình luyện tập luôn có nút “Hiện chữ câu hỏi” dự phòng.
+              </Banner>
+            )}
+          </div>
+        </section>
+
+        {/* Appearance & Typography */}
+        <section className={styles.rowSection}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Giao diện và chữ tiếng Nhật</h2>
+            <p className={styles.hint}>Chỉnh nền giấy sáng/tối, phiên âm furigana và cỡ chữ đọc.</p>
+          </div>
+          <div className={styles.rowMain}>
+            <div className={styles.field}>
+              <span className={styles.label}>Chủ đề màu sắc</span>
+              <SegmentedControl<UserSettings['theme']>
+                ariaLabel="Chọn chủ đề màu sắc"
+                value={state.settings.theme}
+                onChange={(theme) => updateSettings({ theme })}
+                options={[
+                  { value: 'system', label: 'Theo máy' },
+                  { value: 'light', label: 'Sáng (Washi)' },
+                  { value: 'dark', label: 'Tối (Sumi)' },
+                ]}
+              />
+            </div>
+            <hr className={styles.divider} />
+            <Switch
+              label="Hiển thị Furigana (cách đọc nhỏ trên chữ Hán)"
+              description="Ẩn hoặc hiện ngay lập tức, tiện khi tự kiểm tra khả năng đọc Hán tự giống phòng thi."
+              checked={state.settings.furigana}
+              onChange={(furigana) => updateSettings({ furigana })}
             />
+            <hr className={styles.divider} />
+            <div className={styles.field}>
+              <span className={styles.label}>Cỡ chữ tiếng Nhật</span>
+              <SegmentedControl<UserSettings['jpFontSize']>
+                ariaLabel="Chọn cỡ chữ tiếng Nhật"
+                value={state.settings.jpFontSize}
+                onChange={(jpFontSize) => updateSettings({ jpFontSize })}
+                options={[
+                  { value: 'sm', label: 'Nhỏ' },
+                  { value: 'md', label: 'Vừa' },
+                  { value: 'lg', label: 'Lớn' },
+                  { value: 'xl', label: 'Rất lớn' },
+                ]}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Voice Privacy & Typing-only Mode */}
+        <section className={styles.rowSection}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Micro và quyền riêng tư</h2>
+            <p className={styles.hint}>Quyền thu âm chỉ được xin khi em chủ động bấm nút nói.</p>
+          </div>
+          <div className={styles.rowMain}>
+            <Banner tone="info" title="Minh bạch về nhận dạng giọng nói">
+              {t('speechPrivacyNotice')}
+            </Banner>
+            <Switch
+              label="Chế độ chỉ gõ (ẩn nút micro)"
+              description="Phù hợp khi luyện nơi yên tĩnh, ngoại tuyến hoàn toàn hoặc muốn gõ trực tiếp Kana và Romaji."
+              checked={state.settings.typingOnly}
+              onChange={(typingOnly) => updateSettings({ typingOnly })}
+            />
+          </div>
+        </section>
+
+        {/* Backup & Restore */}
+        <section className={styles.rowSection}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Sao lưu và khôi phục</h2>
+            <p className={styles.hint}>
+              Chuyển tiến độ sang thiết bị khác bằng tệp sao lưu an toàn.
+            </p>
+          </div>
+          <div className={styles.rowMain}>
+            <p className={styles.hint}>
+              Tệp xuất ra kèm mã kiểm tra toàn vẹn SHA-256. Khi nhập vào, ứng dụng kiểm tra đúng cấu
+              trúc và giới hạn dung lượng tối đa 1 MB.
+            </p>
             <div className={styles.row}>
               <Button
                 variant="secondary"
-                icon={<Icon name="speaker" size={18} />}
-                onClick={handleTestVoice}
+                icon={<Icon name="download" size={18} />}
+                onClick={handleExport}
               >
-                Nghe thử giọng đọc
+                Xuất tiến độ (.json)
+              </Button>
+              <Button
+                variant="secondary"
+                icon={<Icon name="upload" size={18} />}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Nhập tiến độ (.json)
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json,.json"
+                aria-label="Chọn tệp JSON sao lưu tiến độ"
+                className={styles.fileInput}
+                onChange={handleImportFile}
+              />
+            </div>
+            {importError ? (
+              <Banner tone="danger" role="alert" title="Không thể nhập tệp tiến độ">
+                {importError}
+              </Banner>
+            ) : null}
+          </div>
+        </section>
+
+        {/* Optional Third-Party Promo Toggle (Default OFF) */}
+        <section className={styles.rowSection}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Tài liệu bên thứ ba</h2>
+            <p className={styles.hint}>Tắt mặc định để giữ không gian ôn tập yên tĩnh.</p>
+          </div>
+          <div className={styles.rowMain}>
+            <Switch
+              label="Hiển thị gợi ý luyện thêm từ JPDspeak (mặc định tắt)"
+              description="Khi bật, màn kết quả sẽ hiển thị liên kết ngoài tới manabiman.io.vn và mở trong tab mới."
+              checked={state.settings.showPromo}
+              onChange={(showPromo) => updateSettings({ showPromo })}
+            />
+          </div>
+        </section>
+
+        {/* Danger Zone */}
+        <section className={`${styles.rowSection} ${styles.dangerSection}`}>
+          <div className={styles.rowAside}>
+            <h2 className={styles.sectionTitle}>Xoá toàn bộ dữ liệu</h2>
+            <p className={styles.hint}>
+              Hành động này xoá sạch tiến độ trên thiết bị và không thể hoàn tác.
+            </p>
+          </div>
+          <div className={styles.rowMain}>
+            <p className={styles.hint}>
+              Xoá toàn bộ lịch sử luyện đọc, vấn đáp, chuỗi ngày học và bản nhớ ngoại tuyến trên
+              trình duyệt này.
+            </p>
+            <div className={styles.row}>
+              <Button
+                variant="danger"
+                icon={<Icon name="trash" size={18} />}
+                onClick={() => setConfirmClearOpen(true)}
+              >
+                Xoá toàn bộ dữ liệu
               </Button>
             </div>
-            <p className={styles.hint}>
-              Nếu giọng nghe còn máy móc, thử chọn giọng khác. Giọng có chữ Online, Natural hoặc
-              Google thường tự nhiên hơn nhưng sử dụng dịch vụ đọc văn bản trực tuyến của hãng trình
-              duyệt (có thể gửi nội dung câu hỏi kèm tên hiển thị). Nếu muốn hoàn toàn ngoại tuyến
-              không gửi văn bản ra ngoài, hãy chọn giọng cục bộ trên máy.
-            </p>
-          </>
-        ) : (
-          <Banner tone="warn" title="Máy này chưa có giọng đọc tiếng Nhật">
-            Em có thể mở bằng Chrome hoặc Edge, hoặc cài thêm gói giọng tiếng Nhật trong cài đặt hệ
-            điều hành. Màn hình luyện tập luôn có nút “Hiện chữ câu hỏi” dự phòng.
-          </Banner>
-        )}
-      </Card>
-
-      {/* Appearance & Typography */}
-      <Card className={styles.section}>
-        <h2 className={styles.sectionTitle}>Giao diện &amp; chữ tiếng Nhật</h2>
-        <div className={styles.field}>
-          <span className={styles.label}>Chủ đề màu sắc</span>
-          <SegmentedControl<UserSettings['theme']>
-            ariaLabel="Chọn chủ đề màu sắc"
-            value={state.settings.theme}
-            onChange={(theme) => updateSettings({ theme })}
-            options={[
-              { value: 'system', label: 'Theo máy' },
-              { value: 'light', label: 'Sáng (Washi)' },
-              { value: 'dark', label: 'Tối (Sumi)' },
-            ]}
-          />
-        </div>
-        <hr className={styles.divider} />
-        <Switch
-          label="Hiển thị Furigana (cách đọc nhỏ trên chữ Hán)"
-          description="Bật/tắt tức thì bằng CSS, tiện khi muốn tự kiểm tra khả năng đọc Hán tự."
-          checked={state.settings.furigana}
-          onChange={(furigana) => updateSettings({ furigana })}
-        />
-        <hr className={styles.divider} />
-        <div className={styles.field}>
-          <span className={styles.label}>Cỡ chữ tiếng Nhật</span>
-          <SegmentedControl<UserSettings['jpFontSize']>
-            ariaLabel="Chọn cỡ chữ tiếng Nhật"
-            value={state.settings.jpFontSize}
-            onChange={(jpFontSize) => updateSettings({ jpFontSize })}
-            options={[
-              { value: 'sm', label: 'Nhỏ' },
-              { value: 'md', label: 'Vừa' },
-              { value: 'lg', label: 'Lớn' },
-              { value: 'xl', label: 'Rất lớn' },
-            ]}
-          />
-        </div>
-      </Card>
-
-      {/* Voice Privacy & Typing-only Mode */}
-      <Card className={styles.section}>
-        <h2 className={styles.sectionTitle}>Micro &amp; quyền riêng tư giọng nói</h2>
-        <Banner tone="info" title="Minh bạch về nhận dạng giọng nói">
-          {t('speechPrivacyNotice')}
-        </Banner>
-        <Switch
-          label="Chế độ chỉ gõ (tắt nút micro trình duyệt)"
-          description="Phù hợp khi dùng nơi yên tĩnh, ngoại tuyến hoàn toàn, hoặc muốn gõ trực tiếp Kana/Romaji."
-          checked={state.settings.typingOnly}
-          onChange={(typingOnly) => updateSettings({ typingOnly })}
-        />
-      </Card>
-
-      {/* Backup & Restore */}
-      <Card className={styles.section}>
-        <h2 className={styles.sectionTitle}>Sao lưu &amp; khôi phục tiến độ</h2>
-        <p className={styles.hint}>
-          Xuất tiến độ ra tệp JSON có mã kiểm tra toàn vẹn SHA-256 để chuyển sang thiết bị khác. Tệp
-          nhập vào được kiểm tra cấu trúc chặt chẽ và giới hạn dung lượng 1 MB.
-        </p>
-        <div className={styles.row}>
-          <Button
-            variant="secondary"
-            icon={<Icon name="download" size={18} />}
-            onClick={handleExport}
-          >
-            Xuất tiến độ (.json)
-          </Button>
-          <Button
-            variant="secondary"
-            icon={<Icon name="upload" size={18} />}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Nhập tiến độ (.json)
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json,.json"
-            aria-label="Chọn tệp JSON sao lưu tiến độ"
-            className={styles.fileInput}
-            onChange={handleImportFile}
-          />
-        </div>
-        {importError ? (
-          <Banner tone="danger" role="alert" title="Không thể nhập tệp tiến độ">
-            {importError}
-          </Banner>
-        ) : null}
-      </Card>
-
-      {/* Optional Third-Party Promo Toggle (Default OFF) */}
-      <Card className={styles.section}>
-        <h2 className={styles.sectionTitle}>Liên kết tài liệu bên thứ ba</h2>
-        <Switch
-          label="Hiển thị gợi ý luyện thêm từ JPDspeak (mặc định tắt)"
-          description="Nếu bật, màn kết quả sẽ hiển thị thẻ liên kết ngoài tới manabiman.io.vn. Mọi liên kết ngoài đều mở tab mới an toàn."
-          checked={state.settings.showPromo}
-          onChange={(showPromo) => updateSettings({ showPromo })}
-        />
-      </Card>
-
-      {/* Danger Zone */}
-      <Card className={`${styles.section} ${styles.dangerCard}`}>
-        <h2 className={styles.sectionTitle}>Xoá toàn bộ dữ liệu trên máy</h2>
-        <p className={styles.hint}>
-          Xoá sạch lịch sử luyện tập, tiến độ lưu trong localStorage và bộ nhớ đệm ngoại tuyến
-          (Service Worker cache). Hành động này không thể hoàn tác.
-        </p>
-        <div className={styles.row}>
-          <Button
-            variant="danger"
-            icon={<Icon name="trash" size={18} />}
-            onClick={() => setConfirmClearOpen(true)}
-          >
-            Xoá toàn bộ dữ liệu
-          </Button>
-        </div>
-      </Card>
+          </div>
+        </section>
+      </div>
 
       <Dialog
         open={confirmClearOpen}

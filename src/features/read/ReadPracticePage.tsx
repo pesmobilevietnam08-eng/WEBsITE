@@ -312,7 +312,7 @@ export function ReadPracticePage() {
               value={result.total}
               max={100}
               label={label.text}
-              sublabel={`Chữ Hán ${cfg.wt[0]}% · Katakana ${cfg.wt[1]}% · Hiragana ${cfg.wt[2]}%`}
+              sublabel={`Chữ Hán ${cfg.wt[0]}%, Katakana ${cfg.wt[1]}%, Hiragana ${cfg.wt[2]}%`}
             />
             <p className={styles.hint}>
               Tổng theo tỷ trọng thi thật: Chữ Hán {cfg.wt[0]}%, Katakana {cfg.wt[1]}%, Hiragana{' '}
@@ -323,9 +323,9 @@ export function ReadPracticePage() {
               Máy chỉ so chữ nhận được với bản mẫu; ngữ điệu không được chấm.
             </p>
 
-            {/* 1. Three groups */}
+            {/* Three groups */}
             <div className={styles.section}>
-              <h2 className={styles.secTitle}>1 · Ba nhóm chấm điểm</h2>
+              <h2 className={styles.secTitle}>Điểm theo ba nhóm chữ</h2>
               <div className={styles.bars}>
                 <ProgressBar
                   value={result.h.pct}
@@ -351,9 +351,9 @@ export function ReadPracticePage() {
               </div>
             </div>
 
-            {/* 2. DiffText & Heard */}
+            {/* Character diff & heard text */}
             <div className={styles.section}>
-              <h2 className={styles.secTitle}>2 · So khớp từng chữ (DiffText)</h2>
+              <h2 className={styles.secTitle}>So khớp từng chữ</h2>
               <DiffText tokens={result.diff} showLegend />
               <div>
                 <p className={styles.hint}>
@@ -365,9 +365,9 @@ export function ReadPracticePage() {
               </div>
             </div>
 
-            {/* 3. Errors by group */}
+            {/* Errors by group */}
             <div className={styles.section}>
-              <h2 className={styles.secTitle}>3 · Chỗ cần sửa theo nhóm</h2>
+              <h2 className={styles.secTitle}>Chỗ cần sửa</h2>
               {result.errs.length === 0 ? (
                 <div className={styles.okBox}>Em đọc khớp hoàn toàn với bản mẫu.</div>
               ) : (
@@ -394,7 +394,7 @@ export function ReadPracticePage() {
                           {err.seg || '(không có)'}
                         </span>
                       </div>
-                      <span className={styles.errReason}>{err.lab.join(' · ')}</span>
+                      <span className={styles.errReason}>{err.lab.join(', ')}</span>
                     </div>
                   ))}
                   {result.errs.length > 14 ? (
@@ -406,10 +406,10 @@ export function ReadPracticePage() {
               )}
             </div>
 
-            {/* 4. Frequent error tally */}
+            {/* Frequent error tally */}
             {tallyEntries.length > 0 ? (
               <div className={styles.section}>
-                <h2 className={styles.secTitle}>4 · Lỗi em hay gặp</h2>
+                <h2 className={styles.secTitle}>Lỗi em hay gặp</h2>
                 <div className={styles.tallyRow}>
                   {tallyEntries.map(([name, count]) => (
                     <span key={name} className={styles.tallyChip}>
@@ -420,11 +420,9 @@ export function ReadPracticePage() {
               </div>
             ) : null}
 
-            {/* 5. Reference passage with readings */}
+            {/* Reference passage with readings */}
             <div className={styles.section}>
-              <h2 className={styles.secTitle}>
-                {tallyEntries.length > 0 ? '5' : '4'} · Bản mẫu có cách đọc
-              </h2>
+              <h2 className={styles.secTitle}>Bản mẫu có cách đọc</h2>
               <PassageText
                 passage={prepared}
                 mode="reference"

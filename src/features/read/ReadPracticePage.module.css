@@ -134,31 +134,29 @@
 }
 
 .toneGood {
-  border-top: 4px solid var(--good);
+  border-left: 4px solid var(--good);
 }
 
 .toneMid {
-  border-top: 4px solid var(--warn);
+  border-left: 4px solid var(--warn);
 }
 
 .toneLow {
-  border-top: 4px solid var(--bad);
+  border-left: 4px solid var(--bad);
 }
 
 .section {
   padding-top: var(--sp-4);
-  border-top: 1px dashed var(--line);
+  border-top: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
 }
 
 .secTitle {
-  font-size: var(--text-xs);
+  font-size: var(--text-md);
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-2);
+  color: var(--ink);
 }
 
 .bars {

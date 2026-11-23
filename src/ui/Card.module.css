@@ -1,9 +1,8 @@
 .card {
   background: var(--surface);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: var(--sp-4);
-  box-shadow: var(--shadow-1);
 }
 
 @media (min-width: 640px) {
@@ -12,8 +11,9 @@
   }
 }
 
+/* Notebook binding left margin rule instead of SaaS top stripe */
 .ruled {
-  border-top: 3px solid var(--accent);
+  border-left: 3.5px solid var(--accent);
 }
 
 .qcard {
@@ -22,28 +22,25 @@
   flex-direction: column;
   gap: var(--sp-2);
   width: 100%;
-  min-height: 112px;
+  min-height: 108px;
   padding: var(--sp-4);
   text-align: left;
-  border-radius: var(--radius-md);
-  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow-1);
   transition:
     border-color var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out);
+    background-color var(--dur-fast) var(--ease-out);
 }
 
 .qcard:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-2);
-  transform: translateY(-1px);
+  border-color: var(--ink);
+  background: var(--surface);
 }
 
 .qcardDone {
-  border-color: var(--good);
+  border-left: 3px solid var(--good);
 }
 
 .qcardHead {
@@ -55,27 +52,27 @@
 
 .qcardNo {
   font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 600;
   color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
 }
 
 .qcardTag {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
+  padding: 1px 6px;
+  border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: var(--surface-2);
+  border: 1px solid var(--line);
+  background: var(--bg);
   color: var(--ink-2);
 }
 
 .qcardTitle {
   font-size: var(--text-sm);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--ink);
   overflow-wrap: anywhere;
 }
@@ -83,7 +80,7 @@
 .qcardFoot {
   margin-top: auto;
   padding-top: var(--sp-2);
-  border-top: 1px dashed var(--line);
+  border-top: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -94,6 +91,7 @@
 
 .statusNew {
   color: var(--ink-2);
+  font-weight: 500;
 }
 
 .statusGood {
@@ -108,16 +106,18 @@
   color: var(--bad);
 }
 
+/* Square vermilion Hanko seal */
 .hankoSeal {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: 4px;
   border: 1.5px solid var(--hanko);
   color: var(--hanko);
-  font-size: 0.6875rem;
+  font-family: var(--font-jp);
+  font-size: 0.72rem;
   font-weight: 700;
   flex: none;
 }

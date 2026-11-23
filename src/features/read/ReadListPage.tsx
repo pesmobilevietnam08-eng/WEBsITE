@@ -65,7 +65,6 @@ export function ReadListPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.kicker}>JPD113 · Đọc thành tiếng</p>
         <h1 className={styles.title}>Luyện đọc đoạn văn</h1>
         <p className={styles.lead}>
           Nghe mẫu từng câu, đọc thành tiếng hoặc gõ cách đọc để máy chấm theo 3 nhóm: Chữ Hán
@@ -122,7 +121,7 @@ export function ReadListPage() {
               const preview = `${plainK(firstSent)
                 .replace(/[「」]/g, '')
                 .slice(0, 16)}…`;
-              const statusText = rec ? `Tốt nhất ${rec.best}% · ${rec.count} lần` : 'Chưa luyện';
+              const statusText = rec ? `Tốt nhất ${rec.best}% (${rec.count} lần)` : 'Chưa luyện';
               const tone = !rec ? 'new' : rec.best >= 93 ? 'good' : rec.best >= 60 ? 'warn' : 'bad';
 
               return (

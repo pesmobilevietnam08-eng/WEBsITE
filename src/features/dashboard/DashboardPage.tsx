@@ -5,7 +5,7 @@ import { loadCatalog, loadScale, type CatalogData, type CatalogItem } from '../.
 import type { ScaleMap } from '../../data/schema';
 import { R9_FALLBACK_SCALE } from '../../engine/scale';
 import { computeStreak, formatShortDateTime } from '../../lib/date';
-import { Button, Card, EmptyState, Icon, ProgressBar, ScoreRing, SkeletonGrid } from '../../ui';
+import { Button, EmptyState, Icon, ProgressBar, ScoreRing, SkeletonGrid } from '../../ui';
 import styles from './DashboardPage.module.css';
 
 type SearchFilter = 'all' | 'read' | 'pic' | 'free';
@@ -16,6 +16,12 @@ interface ReviewCandidate {
   readonly badge: string;
   readonly tone: 'bad' | 'warn' | 'accent';
   readonly priority: number;
+}
+
+function kindLabel(kind: CatalogItem['kind']): string {
+  if (kind === 'read') return 'Luyện đọc';
+  if (kind === 'pic') return 'Có tranh';
+  return 'Không tranh';
 }
 
 export function DashboardPage() {
@@ -109,7 +115,6 @@ export function DashboardPage() {
       }
     }
 
-    // Error code frequency across practiced picture questions
     const codeCounts = new Map<string, number>();
     for (const att of Object.values(state.attempts)) {
       for (const code of att.lastCodes ?? []) {
@@ -155,7 +160,6 @@ export function DashboardPage() {
     };
   }, [catalog, state.attempts, state.readAttempts, scale]);
 
-  // Spaced repetition / smart review queue
   const reviewQueue = useMemo<ReviewCandidate[]>(() => {
     if (!catalog) return [];
     const candidates: ReviewCandidate[] = [];
@@ -168,7 +172,7 @@ export function DashboardPage() {
           if (rec.best < 80) {
             candidates.push({
               item,
-              reason: `Điểm đọc còn thấp (${rec.best}%) — nên luyện lại sớm`,
+              reason: `Điểm đọc còn thấp (${rec.best}%), nên luyện lại sớm`,
               badge: `${rec.best}%`,
               tone: rec.best < 60 ? 'bad' : 'warn',
               priority: 100 - rec.best + (due ? 40 : 0),
@@ -190,7 +194,7 @@ export function DashboardPage() {
           if (rec.best < 85) {
             candidates.push({
               item,
-              reason: `Vấn đáp có tranh (${rec.best}%) — cần củng cố mẫu câu`,
+              reason: `Vấn đáp có tranh (${rec.best}%), cần củng cố mẫu câu`,
               badge: `${rec.best}%`,
               tone: rec.best < 60 ? 'bad' : 'warn',
               priority: 105 - rec.best + (due ? 40 : 0),
@@ -209,9 +213,8 @@ export function DashboardPage() {
     }
 
     candidates.sort((a, b) => b.priority - a.priority);
-    if (candidates.length >= 5) return candidates.slice(0, 6);
+    if (candidates.length >= 6) return candidates.slice(0, 6);
 
-    // Fill with unpracticed starter items from active Bài so new learners always have a clear next step
     const pickedIds = new Set(candidates.map((c) => c.item.id));
     const preferredBai = state.settings.lastBai || 1;
     const starters = catalog.items
@@ -224,12 +227,10 @@ export function DashboardPage() {
       .sort((a, b) => (a.bai === preferredBai ? -1 : b.bai === preferredBai ? 1 : a.bai - b.bai));
 
     for (const it of starters) {
-      if (candidates.length >= 5) break;
+      if (candidates.length >= 6) break;
       candidates.push({
         item: it,
-        reason: `Chưa luyện · Bài ${it.bai} (${
-          it.kind === 'read' ? 'Luyện đọc' : it.kind === 'pic' ? 'Có tranh' : 'Không tranh'
-        })`,
+        reason: `Chưa luyện, Bài ${it.bai} (${kindLabel(it.kind)})`,
         badge: 'Mới',
         tone: 'accent',
         priority: 10,
@@ -239,7 +240,6 @@ export function DashboardPage() {
     return candidates;
   }, [catalog, nowMs, state.attempts, state.readAttempts, state.settings.lastBai]);
 
-  // Quick search across all 107 items
   const searchResults = useMemo(() => {
     if (!catalog) return [];
     const q = query.trim().toLowerCase();
@@ -265,12 +265,14 @@ export function DashboardPage() {
     return <SkeletonGrid count={4} />;
   }
 
+  const featured = reviewQueue[0] ?? null;
+  const remainingQueue = featured ? reviewQueue.slice(1) : reviewQueue;
+
   return (
     <div className={styles.page}>
-      {/* Hero notebook overview */}
-      <Card ruled className={styles.hero}>
-        <div className={styles.heroText}>
-          <p className={styles.kicker}>Sổ tay luyện thi JPD113 · Ngoại tuyến</p>
+      {/* Editorial masthead directly on washi paper */}
+      <header className={styles.masthead}>
+        <div className={styles.mastheadText}>
           <h1 className={styles.title}>
             Chào{' '}
             <span className="jp" lang="ja">
@@ -279,121 +281,144 @@ export function DashboardPage() {
           </h1>
           <p className={styles.lead}>
             Đã luyện{' '}
-            <strong>
+            <strong className="tabular">
               {stats.practicedItems}/{stats.totalItems}
             </strong>{' '}
-            mục trên toàn bộ 3 Bài. Mọi tiến độ được lưu riêng trên máy này.
+            mục trong 3 Bài. Toàn bộ điểm số và lịch sử luyện tập nằm riêng trên máy này.
           </p>
-          <div className={styles.ctaRow}>
-            <Button
-              variant="primary"
-              icon={<Icon name="book" size={18} />}
-              onClick={() => navigate(`/read?bai=${state.settings.lastBai}`)}
-            >
-              Luyện đọc
-            </Button>
-            <Button
-              variant="secondary"
-              icon={<Icon name="shuffle" size={18} />}
-              onClick={() => navigate(`/qa/random?bai=${state.settings.lastBai}`)}
-            >
-              Vấn đáp ngẫu nhiên
-            </Button>
-            <Button
-              variant="secondary"
-              icon={<Icon name="clock" size={18} />}
-              onClick={() => navigate('/exam')}
-            >
-              Thi thử
-            </Button>
-          </div>
         </div>
-        <ScoreRing
-          value={stats.avgPct}
-          max={100}
-          label={stats.practicedItems > 0 ? 'Điểm TB chung' : 'Sẵn sàng luyện'}
-          sublabel={
-            stats.practicedItems > 0 ? `Trên các mục đã chấm` : 'Bắt đầu bài đầu tiên hôm nay'
-          }
-        />
-      </Card>
-
-      {/* Key metrics */}
-      <div className={styles.metricsRow}>
-        <div className={styles.statCard}>
-          <div className={styles.statHead}>
-            <span>Chuỗi ngày luyện</span>
-            <Icon name="flame" size={18} className={styles.statIconFlame} />
-          </div>
-          <span className={styles.statNum}>{streak} ngày</span>
-          <span className={styles.statSub}>Tổng {state.activityDays.length} ngày có hoạt động</span>
+        <div className={styles.quickNav}>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Icon name="book" size={16} />}
+            onClick={() => navigate(`/read?bai=${state.settings.lastBai}`)}
+          >
+            Luyện đọc
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Icon name="shuffle" size={16} />}
+            onClick={() => navigate(`/qa/random?bai=${state.settings.lastBai}`)}
+          >
+            Vấn đáp ngẫu nhiên
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Icon name="clock" size={16} />}
+            onClick={() => navigate('/exam')}
+          >
+            Thi thử
+          </Button>
         </div>
+      </header>
 
-        <div className={styles.statCard}>
-          <div className={styles.statHead}>
-            <span>Luyện đọc</span>
-            <Icon name="book" size={18} className={styles.statIcon} />
-          </div>
-          <span className={styles.statNum}>
+      {/* Hairline-divided notebook progress ledger (no boxy KPI cards) */}
+      <section className={styles.ledger} aria-label="Tổng quan tiến độ">
+        <div className={styles.ledgerCell}>
+          <span className={styles.ledgerLabel}>Chuỗi ngày luyện</span>
+          <span className={styles.ledgerNum}>{streak} ngày</span>
+          <span className={styles.ledgerSub}>Tổng {state.activityDays.length} ngày học</span>
+        </div>
+        <div className={styles.ledgerCell}>
+          <span className={styles.ledgerLabel}>Luyện đọc</span>
+          <span className={styles.ledgerNum}>
             {stats.readDone}/{stats.readTotal}
           </span>
-          <span className={styles.statSub}>44 đoạn văn (Bài 1–3)</span>
+          <span className={styles.ledgerSub}>Đoạn văn Bài 1–3</span>
         </div>
-
-        <div className={styles.statCard}>
-          <div className={styles.statHead}>
-            <span>Vấn đáp có tranh</span>
-            <Icon name="chat" size={18} className={styles.statIcon} />
-          </div>
-          <span className={styles.statNum}>
+        <div className={styles.ledgerCell}>
+          <span className={styles.ledgerLabel}>Vấn đáp có tranh</span>
+          <span className={styles.ledgerNum}>
             {stats.picDone}/{stats.picTotal}
           </span>
-          <span className={styles.statSub}>Thang 15 điểm (R0–R11)</span>
+          <span className={styles.ledgerSub}>Chấm theo thang R0–R11</span>
         </div>
-
-        <div className={styles.statCard}>
-          <div className={styles.statHead}>
-            <span>Vấn đáp không tranh</span>
-            <Icon name="stamp" size={18} className={styles.statIcon} />
-          </div>
-          <span className={styles.statNum}>
+        <div className={styles.ledgerCell}>
+          <span className={styles.ledgerLabel}>Vấn đáp không tranh</span>
+          <span className={styles.ledgerNum}>
             {stats.freeDone}/{stats.freeTotal}
           </span>
-          <span className={styles.statSub}>Tự soát theo chủ đề L01–L14</span>
+          <span className={styles.ledgerSub}>Tự soát theo chủ đề</span>
         </div>
-      </div>
+      </section>
 
-      {/* Smart Review + Lesson Progress */}
-      <div className={styles.twoCol}>
-        <Card className={styles.section}>
+      {/* Single elevated focal artifact: Next-up live Japanese study folio */}
+      {featured ? (
+        <section
+          className={`${styles.focalFolio} ${
+            featured.tone === 'bad' || featured.tone === 'warn' ? styles.focalFolioReview : ''
+          }`}
+          aria-label="Bài luyện gợi ý tiếp theo"
+        >
+          <div className={styles.focalBody}>
+            <div className={styles.focalMeta}>
+              <span className={styles.focalTag}>
+                Bài {featured.item.bai}, {kindLabel(featured.item.kind)}
+              </span>
+              <span className={styles.focalReason}>{featured.reason}</span>
+            </div>
+            <p className={styles.focalJp} lang="ja">
+              {featured.item.jp.slice(0, 88)}
+              {featured.item.jp.length > 88 ? '…' : ''}
+            </p>
+            {featured.item.kind !== 'read' ? (
+              <p className={styles.focalTitle}>{featured.item.title}</p>
+            ) : null}
+            <div className={styles.focalActions}>
+              <Button variant="primary" onClick={() => openItem(featured.item)}>
+                Luyện mục này ngay
+              </Button>
+            </div>
+          </div>
+          <div className={styles.focalRing}>
+            <ScoreRing
+              value={stats.avgPct}
+              max={100}
+              label={stats.practicedItems > 0 ? 'Điểm TB chung' : 'Chưa có điểm'}
+              sublabel={
+                stats.practicedItems > 0
+                  ? 'Tính trên các mục đã chấm'
+                  : 'Hoàn thành mục đầu tiên hôm nay'
+              }
+            />
+          </div>
+        </section>
+      ) : null}
+
+      {/* Asymmetric editorial spread: Review Ledger (60%) + Lesson Map (40%) */}
+      <div className={styles.spread}>
+        <section className={styles.spreadMain}>
           <div className={styles.secHead}>
             <h2 className={styles.secTitle}>Câu nên ôn hôm nay</h2>
-            <span className={styles.hint}>Ôn tập thông minh</span>
+            <span className={styles.hint}>Ưu tiên câu điểm thấp hoặc đến hạn</span>
           </div>
-          <div className={styles.reviewList}>
-            {reviewQueue.map((entry) => (
+          <div className={styles.ledgerList}>
+            {remainingQueue.map((entry) => (
               <button
                 key={entry.item.id}
                 type="button"
-                className={styles.reviewItem}
+                className={styles.ledgerRow}
                 onClick={() => openItem(entry.item)}
               >
-                <span className={styles.reviewMeta}>
+                <span className={styles.rowMeta}>
                   <span
-                    className={`${styles.reviewTitle} ${entry.item.kind === 'read' ? 'jp' : ''}`}
+                    className={`${styles.rowTitle} ${entry.item.kind === 'read' ? 'jp' : ''}`}
                     lang={entry.item.kind === 'read' ? 'ja' : undefined}
                   >
                     {entry.item.title}
                   </span>
-                  <span className={styles.reviewSub}>{entry.reason}</span>
+                  <span className={styles.rowSub}>{entry.reason}</span>
                 </span>
                 <span
-                  className={`${styles.pill} ${
+                  className={`${styles.stamp} ${
                     entry.tone === 'bad'
-                      ? styles.pillBad
+                      ? styles.stampBad
                       : entry.tone === 'warn'
-                        ? styles.pillWarn
-                        : styles.pillAccent
+                        ? styles.stampWarn
+                        : styles.stampAccent
                   }`}
                 >
                   {entry.badge}
@@ -401,53 +426,57 @@ export function DashboardPage() {
               </button>
             ))}
           </div>
-        </Card>
+        </section>
 
-        <Card className={styles.section}>
+        <aside className={styles.spreadSide}>
           <div className={styles.secHead}>
-            <h2 className={styles.secTitle}>Tiến độ theo Bài &amp; lỗi hay gặp</h2>
+            <h2 className={styles.secTitle}>Tiến độ theo Bài</h2>
           </div>
-          {stats.byBai.map((b) => (
-            <ProgressBar
-              key={b.bai}
-              value={b.done}
-              max={Math.max(1, b.total)}
-              label={`Bài ${b.bai} (${b.done}/${b.total} mục)`}
-              valueLabel={
-                b.avg > 0 ? `TB ${b.avg}%` : `${Math.round((b.done / Math.max(1, b.total)) * 100)}%`
-              }
-            />
-          ))}
+          <div className={styles.baiBars}>
+            {stats.byBai.map((b) => (
+              <ProgressBar
+                key={b.bai}
+                value={b.done}
+                max={Math.max(1, b.total)}
+                label={`Bài ${b.bai} (${b.done}/${b.total} mục)`}
+                valueLabel={
+                  b.avg > 0
+                    ? `TB ${b.avg}%`
+                    : `${Math.round((b.done / Math.max(1, b.total)) * 100)}%`
+                }
+              />
+            ))}
+          </div>
 
-          <div className={styles.errorTagRow}>
-            <span className={styles.hint}>
-              <strong>Dạng lỗi cần chú ý gần đây:</strong>
-            </span>
+          <div className={styles.errorBlock}>
+            <h3 className={styles.subTitle}>Lỗi vấn đáp hay gặp</h3>
             {stats.topErrors.length === 0 ? (
               <p className={styles.hint}>
-                Chưa có lỗi vấn đáp nào được ghi nhận. Khi luyện câu có tranh, các lỗi hay gặp
-                (R0–R11) sẽ tổng hợp tại đây.
+                Khi em luyện các câu vấn đáp có tranh, các lỗi thường lặp lại (R0–R11) sẽ tổng hợp
+                tại đây.
               </p>
             ) : (
-              stats.topErrors.map((err) => (
-                <div key={err.code} className={styles.errorTag}>
-                  <span>
-                    <span className={styles.errorCode}>{err.code}</span>
-                    {err.name}
-                  </span>
-                  <span className="tabular">{err.count} câu</span>
-                </div>
-              ))
+              <div className={styles.errorList}>
+                {stats.topErrors.map((err) => (
+                  <div key={err.code} className={styles.errorRow}>
+                    <span>
+                      <span className={styles.errorCode}>{err.code}</span>
+                      {err.name}
+                    </span>
+                    <span className="tabular">{err.count} câu</span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </Card>
+        </aside>
       </div>
 
-      {/* Quick Search */}
-      <Card className={styles.section}>
+      {/* Inline offline search directly on washi */}
+      <section className={styles.flatSection}>
         <div className={styles.secHead}>
-          <h2 className={styles.secTitle}>Tìm kiếm nhanh câu hỏi &amp; từ vựng</h2>
-          <span className={styles.hint}>107 mục · hoàn toàn ngoại tuyến</span>
+          <h2 className={styles.secTitle}>Tìm nhanh câu hỏi và từ vựng</h2>
+          <span className={styles.hint}>Tra cứu ngoại tuyến trên 107 mục</span>
         </div>
         <div className={styles.searchBar}>
           <div className={styles.searchInputWrap}>
@@ -506,55 +535,56 @@ export function DashboardPage() {
               }
             />
           ) : (
-            <div className={styles.reviewList}>
+            <div className={styles.ledgerList}>
               {searchResults.map((item) => (
                 <button
                   key={item.id}
                   type="button"
-                  className={styles.reviewItem}
+                  className={styles.ledgerRow}
                   onClick={() => openItem(item)}
                 >
-                  <span className={styles.reviewMeta}>
-                    <span className={styles.reviewTitle}>
-                      {item.id} · {item.title}
+                  <span className={styles.rowMeta}>
+                    <span className={styles.rowTitle}>
+                      <span className={styles.codeId}>{item.id}</span> {item.title}
                     </span>
-                    <span className={`${styles.reviewSub} jp`} lang="ja">
+                    <span className={`${styles.rowSub} jp`} lang="ja">
                       {item.jp.slice(0, 64)}
                       {item.jp.length > 64 ? '…' : ''}
                     </span>
                   </span>
-                  <span className={`${styles.pill} ${styles.pillAccent}`}>Bài {item.bai}</span>
+                  <span className={`${styles.stamp} ${styles.stampAccent}`}>Bài {item.bai}</span>
                 </button>
               ))}
             </div>
           )
         ) : null}
-      </Card>
+      </section>
 
-      {/* Recent mock exam history */}
+      {/* Recent mock exam history directly on washi */}
       {state.examHistory.length > 0 ? (
-        <Card className={styles.section}>
+        <section className={styles.flatSection}>
           <div className={styles.secHead}>
             <h2 className={styles.secTitle}>Lịch sử thi thử gần đây</h2>
             <Button variant="ghost" size="sm" onClick={() => navigate('/exam')}>
               Làm đề thi mới
             </Button>
           </div>
-          <div className={styles.reviewList}>
+          <div className={styles.ledgerList}>
             {[...state.examHistory]
               .reverse()
               .slice(0, 5)
               .map((ex) => (
-                <div key={ex.id} className={styles.errorTag}>
-                  <span>
-                    <strong>{formatShortDateTime(ex.at)}</strong> · Đọc {ex.readScore}% · Có tranh{' '}
-                    {ex.picAvgPct}% · Không tranh {ex.freePassCount}/{ex.freeTotal}
+                <div key={ex.id} className={styles.historyRow}>
+                  <span className={styles.historyText}>
+                    <strong className="tabular">{formatShortDateTime(ex.at)}</strong>, đọc{' '}
+                    {ex.readScore}%, có tranh {ex.picAvgPct}%, không tranh {ex.freePassCount}/
+                    {ex.freeTotal}
                   </span>
-                  <span className={`${styles.pill} ${styles.pillAccent}`}>{ex.overallPct}%</span>
+                  <span className={`${styles.stamp} ${styles.stampAccent}`}>{ex.overallPct}%</span>
                 </div>
               ))}
           </div>
-        </Card>
+        </section>
       ) : null}
     </div>
   );

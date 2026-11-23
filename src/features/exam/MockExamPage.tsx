@@ -353,7 +353,6 @@ export function MockExamPage() {
     return (
       <div className={styles.page}>
         <header className={styles.header}>
-          <p className={styles.kicker}>Mô phỏng phòng thi nói JPD113</p>
           <h1 className={styles.title}>Thi thử có giới hạn thời gian</h1>
           <p className={styles.lead}>
             Mỗi đề gồm 6 câu bốc ngẫu nhiên: 1 đoạn đọc thành tiếng (40%), 3 câu vấn đáp có tranh
@@ -412,8 +411,8 @@ export function MockExamPage() {
     return (
       <div className={styles.page} aria-live="polite">
         <header className={styles.header}>
-          <p className={styles.kicker}>Kết quả bài thi thử</p>
           <h1 className={styles.title}>Báo cáo tổng kết</h1>
+          <p className={styles.lead}>Kết quả ước tính cho bài thi thử 6 câu vừa hoàn thành.</p>
         </header>
 
         <Card ruled className={styles.section}>
@@ -428,21 +427,21 @@ export function MockExamPage() {
             value={summaryRecord.readScore}
             max={100}
             tone="hanko"
-            label="Phần 1 · Đọc thành tiếng (40%)"
+            label="Phần 1: Đọc thành tiếng (40%)"
             valueLabel={`${summaryRecord.readScore}%`}
           />
           <ProgressBar
             value={summaryRecord.picAvgPct}
             max={100}
             tone="accent"
-            label="Phần 2 · Vấn đáp có tranh (45%)"
+            label="Phần 2: Vấn đáp có tranh (45%)"
             valueLabel={`${summaryRecord.picAvgPct}%`}
           />
           <ProgressBar
             value={summaryRecord.freePassCount}
             max={Math.max(1, summaryRecord.freeTotal)}
             tone="good"
-            label={`Phần 3 · Vấn đáp không tranh (${summaryRecord.freePassCount}/${summaryRecord.freeTotal} đạt đủ tiêu chí)`}
+            label={`Phần 3: Vấn đáp không tranh (${summaryRecord.freePassCount}/${summaryRecord.freeTotal} đạt đủ tiêu chí)`}
             valueLabel={`${Math.round((summaryRecord.freePassCount / Math.max(1, summaryRecord.freeTotal)) * 100)}%`}
           />
 

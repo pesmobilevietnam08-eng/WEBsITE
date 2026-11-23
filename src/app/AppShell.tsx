@@ -65,10 +65,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link to="/" className={styles.brand}>
           <span className={styles.brandMark} aria-hidden="true">
             113
-            <span className={styles.brandDot} />
           </span>
           <span className={styles.brandText}>
-            <span className={styles.brandTitle}>JPD113 Speaking</span>
+            <span className={styles.brandTitle}>JPD113</span>
             <span className={styles.brandSub}>Sổ tay luyện thi nói</span>
           </span>
         </Link>
@@ -113,11 +112,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Link to="/" className={styles.brand}>
           <span className={styles.brandMark} aria-hidden="true">
             113
-            <span className={styles.brandDot} />
           </span>
           <span className={styles.brandText}>
             <span className={styles.brandTitle}>JPD113</span>
-            <span className={styles.brandSub}>Ôn thi nói</span>
+            <span className={styles.brandSub}>Sổ tay thi nói</span>
           </span>
         </Link>
         <div className={styles.headerActions}>

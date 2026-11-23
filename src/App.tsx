@@ -7,6 +7,12 @@ import { Card, ErrorBoundary, SkeletonGrid, ToastProvider } from './ui';
 const SettingsPage = lazy(() =>
   import('./features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
+const ReadListPage = lazy(() =>
+  import('./features/read/ReadListPage').then((m) => ({ default: m.ReadListPage })),
+);
+const ReadPracticePage = lazy(() =>
+  import('./features/read/ReadPracticePage').then((m) => ({ default: m.ReadPracticePage })),
+);
 const QaListPage = lazy(() =>
   import('./features/qa/QaListPage').then((m) => ({ default: m.QaListPage })),
 );
@@ -44,15 +50,8 @@ export function App() {
                       />
                     }
                   />
-                  <Route
-                    path="/read/*"
-                    element={
-                      <SectionPlaceholder
-                        title="Luyện đọc thành tiếng"
-                        desc="Chọn Bài 1–3 và luyện đọc 44 đoạn văn có chấm theo nhóm chữ."
-                      />
-                    }
-                  />
+                  <Route path="/read" element={<ReadListPage />} />
+                  <Route path="/read/:id" element={<ReadPracticePage />} />
                   <Route path="/qa" element={<QaListPage />} />
                   <Route path="/qa/:id" element={<QaPracticePage />} />
                   <Route

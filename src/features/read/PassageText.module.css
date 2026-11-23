@@ -1,0 +1,63 @@
+.passage {
+  padding: var(--sp-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-family: var(--font-jp);
+  font-size: calc(clamp(1.3rem, 1.1rem + 0.9vw, 1.85rem) * var(--jp-scale));
+  line-height: 2.15;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.ptitle {
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+
+.snt {
+  border-radius: 6px;
+  padding: 2px 3px;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.sntActive {
+  background: var(--mark);
+  color: var(--mark-ink);
+}
+
+.han {
+  border-bottom: 2.5px solid var(--hanko);
+  padding-bottom: 1px;
+  font-weight: 600;
+}
+
+.kata {
+  color: var(--kata);
+  font-weight: 600;
+}
+
+.ruby {
+  ruby-position: over;
+  ruby-align: center;
+}
+
+.rt {
+  font-size: 0.54em;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.errChar {
+  color: var(--bad);
+  background: var(--bad-soft);
+  text-decoration: underline wavy var(--bad);
+  text-underline-offset: 3px;
+  border-radius: 3px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+
+.okChar {
+  color: inherit;
+}

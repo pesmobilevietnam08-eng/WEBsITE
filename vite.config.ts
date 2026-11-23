@@ -64,6 +64,7 @@ export default defineConfig({
     target: 'es2022',
     sourcemap: false,
     cssCodeSplit: true,
+    assetsInlineLimit: 0,
     rollupOptions: {
       output: {
         manualChunks(id) {

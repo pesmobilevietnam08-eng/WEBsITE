@@ -26,20 +26,28 @@ export function PictureView({ picKey, alt, priority = false }: PictureViewProps)
   const base = `./images/pictures/${encodeURIComponent(picKey)}`;
 
   return (
-    <div className={styles.frame}>
-      <picture>
-        <source srcSet={`${base}.avif`} type="image/avif" />
-        <source srcSet={`${base}.webp`} type="image/webp" />
-        <img
-          src={`${base}.png`}
-          alt={alt}
-          width={dims.width}
-          height={dims.height}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          className={styles.img}
-        />
-      </picture>
-    </div>
+    <figure className={styles.poster}>
+      <div className={styles.spine} aria-hidden="true">
+        <span className="jp-spine" lang="ja">
+          写真・問題
+        </span>
+        <span className={styles.code}>{picKey}</span>
+      </div>
+      <div className={styles.frame}>
+        <picture>
+          <source srcSet={`${base}.avif`} type="image/avif" />
+          <source srcSet={`${base}.webp`} type="image/webp" />
+          <img
+            src={`${base}.png`}
+            alt={alt}
+            width={dims.width}
+            height={dims.height}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+            className={styles.img}
+          />
+        </picture>
+      </div>
+    </figure>
   );
 }

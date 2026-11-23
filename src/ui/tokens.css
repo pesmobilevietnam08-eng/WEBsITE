@@ -1,36 +1,42 @@
 :root {
-  /* Palette — Washi & Sumi (Light) */
-  --bg: #f6f3ec;
-  --surface: #ffffff;
-  --surface-2: #efebe1;
-  --ink: #15213b;
-  --ink-2: #4a5775;
-  --line: #d9d3c4;
-  --line-strong: #857d6b;
+  /* Palette — Contemporary Japanese Magazine & Riso Print (Light) */
+  --bg: #f4efe3;
+  --surface: #fcf9f1;
+  --surface-2: #e8e1d0;
+  --ink: #111318;
+  --ink-2: #444a57;
+  --line: #ccc3ae;
+  --line-strong: #6e6758;
 
-  --accent: #0a6e72;
-  --accent-hover: #07575a;
+  /* ONE fierce accent: Shu-iro / Hanko Vermilion */
+  --accent: #c4221b;
+  --accent-hover: #9e1913;
   --accent-ink: #ffffff;
-  --accent-soft: #dff0ee;
+  --accent-soft: #fae3df;
 
-  --hanko: #c0262d;
+  --hanko: #c4221b;
   --hanko-ink: #ffffff;
-  --hanko-soft: #fce8e7;
+  --hanko-soft: #fae3df;
 
-  --kata: #1b56b5;
-  --kata-soft: #e5eefc;
+  /* Subtle second Riso ink: Cobalt Print Plate */
+  --riso: #1d4cb8;
+  --riso-soft: #dfe8fa;
+  --kata: #1d4cb8;
+  --kata-soft: #dfe8fa;
 
-  --good: #156b3b;
-  --good-soft: #dcf2e5;
-  --warn: #7d4f00;
-  --warn-soft: #fdf0d2;
-  --bad: #b3261e;
-  --bad-soft: #fbe3e1;
+  /* Semantic grading tokens (WCAG 2.2 AA verified) */
+  --good: #146336;
+  --good-soft: #daf0e3;
+  --warn: #7a4b00;
+  --warn-soft: #fceec9;
+  --bad: #b51e18;
+  --bad-soft: #fadfd9;
 
-  --mark: #ffe08a;
-  --mark-ink: #3d2b00;
+  --mark: #ffe082;
+  --mark-ink: #2c1e00;
 
-  /* Typography */
+  /* Typography — 3 self-hosted fonts max */
+  --font-display: 'Shippori Mincho', 'Be Vietnam Pro', Georgia, serif;
   --font-ui: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
   --jp-scale: 1;
@@ -53,62 +59,69 @@
   --sp-12: 48px;
   --sp-16: 64px;
 
-  /* Radii */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
+  /* Sharp editorial print geometry */
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
   --radius-pill: 999px;
 
-  /* Elevation (2 subtle levels) */
-  --shadow-1: 0 1px 2px rgba(21, 33, 59, 0.06), 0 1px 1px rgba(21, 33, 59, 0.03);
-  --shadow-2: 0 8px 24px -10px rgba(21, 33, 59, 0.14), 0 2px 6px rgba(21, 33, 59, 0.05);
+  /* Riso print-registration offset shadows (no blurry SaaS drop shadows) */
+  --shadow-1: 3px 3px 0 rgba(17, 19, 24, 0.14);
+  --shadow-2: 5px 5px 0 var(--riso);
+  --shadow-ink: 4px 4px 0 var(--ink);
+  --shadow-hanko: 4px 4px 0 var(--hanko);
 
   /* Motion */
   --dur-fast: 120ms;
-  --dur-base: 180ms;
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-base: 220ms;
+  --ease-out: cubic-bezier(0.2, 0.85, 0.25, 1);
 
   /* Layout */
-  --sidebar-w: 248px;
+  --sidebar-w: 244px;
   --bottom-nav-h: 68px;
-  --content-max: 960px;
+  --content-max: 1020px;
 
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
-  --bg: #0f1420;
-  --surface: #171e2e;
-  --surface-2: #1f2840;
-  --ink: #e9eef9;
-  --ink-2: #a9b6d0;
-  --line: #2b3a58;
-  --line-strong: #5e7299;
+  /* Palette — "Đêm in ấn" (Printing-Plate Night) */
+  --bg: #0e1016;
+  --surface: #161922;
+  --surface-2: #202431;
+  --ink: #f4ede0;
+  --ink-2: #b3ab9e;
+  --line: #2f3547;
+  --line-strong: #6a738c;
 
-  --accent: #5fd0c9;
-  --accent-hover: #7addd7;
-  --accent-ink: #06282a;
-  --accent-soft: #13363c;
+  --accent: #ff6e5a;
+  --accent-hover: #ff8978;
+  --accent-ink: #1a0805;
+  --accent-soft: #381815;
 
-  --hanko: #ff8f87;
-  --hanko-ink: #2b080a;
-  --hanko-soft: #3d1c20;
+  --hanko: #ff6e5a;
+  --hanko-ink: #1a0805;
+  --hanko-soft: #381815;
 
-  --kata: #8eb8ff;
-  --kata-soft: #192c4f;
+  --riso: #82adff;
+  --riso-soft: #17274a;
+  --kata: #82adff;
+  --kata-soft: #17274a;
 
-  --good: #62d996;
-  --good-soft: #12362a;
-  --warn: #f2c55c;
-  --warn-soft: #3a2e10;
-  --bad: #ff8f87;
-  --bad-soft: #431a18;
+  --good: #5ed894;
+  --good-soft: #113325;
+  --warn: #f4c85e;
+  --warn-soft: #382b0e;
+  --bad: #ff877a;
+  --bad-soft: #3e1816;
 
-  --mark: #b88a00;
-  --mark-ink: #0f1420;
+  --mark: #d49b00;
+  --mark-ink: #101218;
 
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --shadow-2: 0 12px 28px -10px rgba(0, 0, 0, 0.48);
+  --shadow-1: 3px 3px 0 rgba(0, 0, 0, 0.55);
+  --shadow-2: 5px 5px 0 rgba(130, 173, 255, 0.42);
+  --shadow-ink: 4px 4px 0 rgba(244, 237, 224, 0.22);
+  --shadow-hanko: 4px 4px 0 rgba(255, 110, 90, 0.48);
 
   color-scheme: dark;
 }

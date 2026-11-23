@@ -408,12 +408,19 @@ export function QaPracticePage() {
           </div>
         </>
       ) : (
-        <div className={styles.split}>
-          {/* Left column: Prompt & Picture */}
-          <Card ruled className={styles.col}>
+        <div key={question.id} className={`${styles.split} page-turn`}>
+          {/* Left column: Unwrapped Showa Tournament Poster & Prompt directly on washi */}
+          <div className={styles.col}>
             {question.kind === 'pic' ? (
               <PictureView picKey={question.picKey} alt={question.picAlt} priority />
-            ) : null}
+            ) : (
+              <div className={styles.freeBanner} aria-hidden="true">
+                <span className={styles.freeGlyph} lang="ja">
+                  会話
+                </span>
+                <span className={styles.freeCaption}>Vấn đáp tự do · Không tranh</span>
+              </div>
+            )}
             <p className={styles.note}>
               {question.kind === 'pic'
                 ? 'Nhìn tranh, nghe câu hỏi (chưa hiện chữ) rồi trả lời ngắn gọn, đúng trọng tâm.'
@@ -421,7 +428,7 @@ export function QaPracticePage() {
             </p>
             <div className={styles.controls}>
               <Button
-                variant="primary"
+                variant="secondary"
                 icon={<Icon name="speaker" size={18} />}
                 onClick={handlePlayQuestion}
               >
@@ -459,10 +466,20 @@ export function QaPracticePage() {
                 {spokenText}
               </div>
             ) : null}
-          </Card>
+          </div>
 
-          {/* Right column: Answer input & grading */}
-          <Card className={styles.col}>
+          {/* Right column: Broadcast Answer Console */}
+          <Card className={`${styles.col} ${styles.studioCol}`}>
+            <div className={styles.studioBar}>
+              <span className={styles.studioTitle}>
+                <span className={styles.liveDot} aria-hidden="true" />
+                Phòng thu trả lời
+              </span>
+              <span className={styles.studioJp} lang="ja" aria-hidden="true">
+                録音
+              </span>
+            </div>
+
             <label htmlFor={textareaId} className={styles.label}>
               Câu trả lời của em
             </label>
@@ -490,9 +507,9 @@ export function QaPracticePage() {
 
             <div className={styles.actionRow}>
               {!state.settings.typingOnly && capabilities.hasSTT ? (
-                <MicButton state={micState} idleLabel="Nói" onClick={handleMicToggle} />
+                <MicButton state={micState} size="lg" idleLabel="Nói" onClick={handleMicToggle} />
               ) : null}
-              <Button variant="primary" loading={grading} onClick={handleSubmit}>
+              <Button variant="primary" size="lg" loading={grading} onClick={handleSubmit}>
                 Chấm câu trả lời
               </Button>
             </div>

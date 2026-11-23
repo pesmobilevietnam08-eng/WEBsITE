@@ -353,6 +353,9 @@ export function MockExamPage() {
     return (
       <div className={styles.page}>
         <header className={styles.header}>
+          <span className={styles.bgWord} aria-hidden="true" lang="ja">
+            本番
+          </span>
           <h1 className={styles.title}>Thi thử có giới hạn thời gian</h1>
           <p className={styles.lead}>
             Mỗi đề gồm 6 câu bốc ngẫu nhiên: 1 đoạn đọc thành tiếng (40%), 3 câu vấn đáp có tranh

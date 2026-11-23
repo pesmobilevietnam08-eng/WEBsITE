@@ -14,7 +14,7 @@ export interface MicButtonProps {
 export function MicButton({
   state,
   idleLabel = 'Nói bằng micro',
-  listeningLabel = 'Đang nghe… bấm để dừng',
+  listeningLabel = 'Đang thu trực tiếp… bấm để dừng',
   size = 'md',
   onClick,
 }: MicButtonProps) {
@@ -45,16 +45,29 @@ export function MicButton({
       disabled={isError || isUnsupported}
       onClick={onClick}
     >
-      {isListening ? (
-        <span className={styles.waves} aria-hidden="true">
-          <span className={styles.bar} />
-          <span className={`${styles.bar} ${styles.bar2}`} />
-          <span className={`${styles.bar} ${styles.bar3}`} />
-        </span>
-      ) : (
-        <Icon name={isError || isUnsupported ? 'mic-off' : 'mic'} size={20} />
-      )}
-      <span>{label}</span>
+      <span className={styles.lampWrap} aria-hidden="true">
+        {isListening ? (
+          <span className={styles.waves}>
+            <span className={styles.bar} />
+            <span className={`${styles.bar} ${styles.bar2}`} />
+            <span className={`${styles.bar} ${styles.bar3}`} />
+            <span className={`${styles.bar} ${styles.bar4}`} />
+            <span className={`${styles.bar} ${styles.bar5}`} />
+          </span>
+        ) : (
+          <span className={styles.recLamp}>
+            <Icon name={isError || isUnsupported ? 'mic-off' : 'mic'} size={18} />
+          </span>
+        )}
+      </span>
+      <span className={styles.textWrap}>
+        <span className={styles.label}>{label}</span>
+        {!isError && !isUnsupported ? (
+          <span className={styles.sub} aria-hidden="true">
+            {isListening ? 'ON AIR · Đang thu âm' : 'Ghi âm trực tiếp'}
+          </span>
+        ) : null}
+      </span>
     </button>
   );
 }

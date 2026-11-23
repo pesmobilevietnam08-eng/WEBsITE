@@ -136,7 +136,7 @@ async function assertNoOverflow(page, label) {
 }
 
 async function capture(page, fileName) {
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(550);
   await assertNoOverflow(page, fileName);
   await page.screenshot({ path: path.join(outDir, fileName), fullPage: true });
   capturedCount += 1;

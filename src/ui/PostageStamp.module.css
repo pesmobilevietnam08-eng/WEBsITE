@@ -1,0 +1,99 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+/* Perforated serrated postage stamp silhouette */
+.stamp {
+  position: relative;
+  padding: 7px;
+  background: var(--surface);
+  border: 2px dashed var(--ink);
+  box-shadow: var(--shadow-2);
+  min-width: 184px;
+  width: 100%;
+}
+
+.inner {
+  border: 1.5px solid var(--accent);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg);
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+}
+
+.postMark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.jpTag {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--riso);
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.num {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+
+.foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  border-top: 1px dashed var(--line);
+  padding-top: 4px;
+  font-size: 0.72rem;
+  color: var(--ink-2);
+}
+
+.yen {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cancel {
+  position: absolute;
+  right: -12px;
+  top: -12px;
+  color: var(--ink);
+  opacity: 0.22;
+  pointer-events: none;
+  transform: rotate(-10deg);
+}

@@ -89,8 +89,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className={styles.sideFoot}>
+          <div className={styles.colophon} aria-hidden="true">
+            <span className="jp-spine" lang="ja">
+              日本語・口頭試験
+            </span>
+          </div>
           <div className={styles.learnerPill}>
-            <span>Học viên</span>
+            <span>Thí sinh</span>
             <span className={styles.learnerName} lang="ja">
               {state.name}さん
             </span>
@@ -102,7 +107,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             icon={<Icon name={resolvedTheme === 'dark' ? 'sun' : 'moon'} size={18} />}
             onClick={toggleTheme}
           >
-            {resolvedTheme === 'dark' ? 'Chuyển nền sáng' : 'Chuyển nền tối'}
+            {resolvedTheme === 'dark' ? 'Bản in sáng' : 'Đêm in ấn'}
           </Button>
         </div>
       </aside>

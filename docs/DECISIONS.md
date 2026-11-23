@@ -69,3 +69,24 @@ Tài liệu ghi nhận các quyết định kỹ thuật quan trọng theo nguy�
   3. Cắt lại chuỗi sau `.normalize('NFKC')` và cuối `norm()`/`readNorm()` để triệt tiêu khuếch đại 15× từ ký tự NFKC/số, chuyển DP sang `Int32Array` có trần độ dài, đồng thời giữ nguyên 100% khớp 1.818 ca golden test.
   4. Đồng bộ cập nhật Service Worker qua sự kiện `controllerchange`, tránh ghi ngược `localStorage` ngay sau `resetAllData()`, gỡ `runtimeCaching` `.woff2` dư thừa, và cấm `npx --yes` tải gói ngoài lockfile trong `scripts/run-lighthouse.mjs`.
 - **Lý do:** Đóng toàn bộ 8 phát hiện mức Medium từ cuộc kiểm toán bảo mật độc lập ([docs/SECURITY-AUDIT.md](./SECURITY-AUDIT.md)), nâng kết luận phát hành từ `CONDITIONAL GO` lên `GO`.
+
+## ADR-013: Định hướng thẩm mỹ phá cách "Tạp chí Nhật Bản đương đại gặp áp phích thi đấu" (Brutus × Showa Riso × Hanko)
+- **Ngày:** 2026-11-24
+- **Quyết định:** Nâng cấp toàn bộ Design System sang ngôn ngữ thị giác **"Tạp chí Nhật Bản đương đại gặp áp phích thi đấu"** trên nền 3 font tự host (**Shippori Mincho** 700/800 cho chữ hiển thị/điểm số/chữ Nhật khổng lồ, **Noto Sans JP** cho nội dung tiếng Nhật, **Be Vietnam Pro** cho UI), màu giấy kem riso (`#F4EFE3`) + mực đen sumi (`#111318`) + một màu nhấn đỏ chu sa gắt (`#C4221B` sáng / `#FF6E5A` tối) + xanh lam riso phụ (`#1D4CB8` / `#82ADFF`), chất liệu hạt giấy SVG tĩnh (`public/textures/washi-grain.svg`), bóng in lệch màu riso và con dấu Hanko đóng nảy.
+- **So sánh 3 mức mockup cho từng màn hình điểm nhấn & lựa chọn:**
+  1. **Trang chủ (`/#/`):**
+     - *1A — Táo bạo:* Bìa tạp chí sạch, chữ nền mờ, 2 cột cân bằng (an toàn nhưng thiếu kịch tính áp phích).
+     - *1B — Rất táo bạo (ĐƯỢC CHỌN):* Chữ Nhật khổng lồ cắt mép làm nền bìa (`日本語`), dải dọc 90° (`試験・壱`), khối **Ván đấu tiếp theo** có bóng in lệch riso với nút đỏ chu sa nổi bật ngay màn đầu, ghép **Tem bưu điện răng cưa (`〒 JPD113`)** cho streak và vòng điểm lớn. Vừa phá cách mạnh vừa giúp người mới thấy ngay nút cần bấm trong 1 giây.
+     - *1C — Thử nghiệm:* Toàn trang xoay nghiêng kiểu dán tường, chữ dọc phủ 100vh (loại vì khó quét ở 360px và làm người mới rối mắt).
+  2. **Luyện một câu (`/#/qa/:id` & `/#/read/:id`):**
+     - *2A — Táo bạo:* Khung viền đen đậm cho tranh + nút micro lớn (chưa ra chất trường quay thi đấu).
+     - *2B — Rất táo bạo (ĐƯỢC CHỌN):* Tranh tình huống đóng khung kiểu **áp phích Showa** (viền mực dày, bóng in riso xanh, dấu góc in ấn, nhãn dọc 90° `写真`), câu hỏi chữ lớn phẳng dễ đọc tuyệt đối, nút micro thiết kế như bảng **"Ghi âm trực tiếp / ON AIR"** có sóng âm động.
+     - *2C — Thử nghiệm:* Ép nền tối phòng thu toàn màn hình có sóng âm sau chữ (loại vì giảm độ rõ furigana và phá nhất quán sáng/tối).
+  3. **Kết quả (`QaResultPanel` & `ReadPracticePage` result):**
+     - *3A — Táo bạo:* Số điểm 48px + con dấu nhỏ (thiếu cao trào đóng dấu và cảm giác bài thi được thầy chấm).
+     - *3B — Rất táo bạo (ĐƯỢC CHỌN):* **Số điểm khổng lồ** dùng Shippori Mincho có hiệu ứng đếm lên, **con dấu Hanko đỏ đóng nảy** (`優`/`良`/`再`) xuống góc phiếu, dải nhãn dọc `採点票`, và khối sửa lỗi mang chất **bút đỏ thầy giáo (`赤ペン`)** khoanh trực tiếp bên lề bài.
+     - *3C — Thử nghiệm:* Con dấu phủ 50% màn hình đè lên đáp án mẫu (loại vì che mất nội dung học viên cần sửa).
+- **Bảo toàn giới hạn bắt buộc:** Giữ nguyên toàn bộ 46 cặp tương phản WCAG 2.2 AA (`npm run check:contrast`), vùng chạm ≥ 44px, bàn phím đầy đủ, `prefers-reduced-motion`, 0 emoji, 0 tài nguyên mạng ngoài (`assetsInlineLimit: 0` trong `vite.config.ts` để font nhỏ < 4 KB không bị inline dạng `data:` vi phạm `font-src 'self'`), và không cuộn ngang ở 360px.
+- **Nhật ký 2 vòng tự phê bình Art Director (dựa trên ảnh chụp 390px & 1440px, sáng & tối):**
+  - *Vòng 1 (5 điểm yếu đã sửa):* (1) Loại bỏ điểm trùng và lỗi bẹp `ScoreRing` trên màn kết quả mobile, thêm `flex: none`; (2) Tăng khoảng thở tiêu đề thương hiệu và dời chữ Nhật nền `日本語試験` xuống góc phải-dưới tránh vướng dòng chào; (3) Gỡ khung `<Card>` bọc đôi quanh tấm áp phích tranh `PictureView` ở màn luyện vấn đáp và giữ đúng 2 nút thẳng hàng trong thẻ ván đấu Trang chủ; (4) Thêm `flex: none` cho icon trong `Button` tránh méo trên 390px; (5) Đổi thanh Hiragana từ đỏ sang xanh lá (`tone="good"`) tách biệt hoàn toàn với Chữ Hán (đỏ) & Katakana (xanh lam), đồng nhất con dấu Hanko về màu đỏ chu sa đích thực.
+  - *Vòng 2 (5 điểm yếu đã sửa):* (1) Khôi phục kỷ luật "1 màu nhấn gắt dùng cực hạn chế": chuyển `Banner` info và `ProgressBar` mặc định sang xanh lam Riso (`--riso`), chuyển `Switch` sang mực đen Sumi (`--ink`) để màu đỏ chu sa chỉ còn ở CTA chính, con dấu Hanko và bút đỏ sửa lỗi; (2) Căn bằng rộng nút micro `Phòng thu` và nút chấm bài trên màn luyện; (3) Cắt bỏ câu mô tả tỷ trọng đọc bị lặp ở màn kết quả đọc; (4) Sửa chữ mồ côi `"dấu"` trên hộp điểm Trang chủ và đổi viền mẫu tên trong Cài đặt sang xanh Riso; (5) Rà soát độ rõ cho người mở lần đầu trên cả 3 màn điểm nhấn (nhìn thấy nút chính và hành động đầu tiên ngay tức thì).

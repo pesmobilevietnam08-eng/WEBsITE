@@ -19,6 +19,24 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
+  position: relative;
+}
+
+/* Static self-hosted SVG paper grain texture (100% CSP img-src 'self' compliant) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background-image: url('/textures/washi-grain.svg');
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.055;
+}
+
+:root[data-theme='dark'] body::before {
+  opacity: 0.04;
 }
 
 img,
@@ -56,13 +74,13 @@ p {
 h1,
 h2,
 h3 {
-  line-height: 1.28;
-  letter-spacing: -0.015em;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 :focus-visible {
-  outline: 2.5px solid var(--accent);
+  outline: 2.5px solid var(--riso);
   outline-offset: 2px;
 }
 
@@ -70,15 +88,45 @@ h3 {
   font-family: var(--font-jp);
 }
 
+.jp-display {
+  font-family: var(--font-display);
+}
+
 .jp-reading {
   font-family: var(--font-jp);
   font-size: calc(clamp(1.375rem, 1.15rem + 1.1vw, 2rem) * var(--jp-scale));
-  line-height: 2.05;
+  line-height: 2.08;
   letter-spacing: 0.015em;
 }
 
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* Deliberate editorial page-turn entrance on new match / question */
+@keyframes pageTurnIn {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.page-turn {
+  animation: pageTurnIn 220ms var(--ease-out) both;
+}
+
+/* Vertical Japanese editorial spine tag (rotated 90deg via writing-mode) */
+.jp-spine {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  user-select: none;
 }
 
 .sr-only {
@@ -102,12 +150,12 @@ h3 {
   border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-ink);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-ink);
 }
 
-.skip-link:focus {
+.skip-link:focus-visible {
   top: var(--sp-4);
 }
 

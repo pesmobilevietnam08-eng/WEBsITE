@@ -65,6 +65,9 @@ export function ReadListPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
+        <span className={styles.bgWord} aria-hidden="true" lang="ja">
+          朗読
+        </span>
         <h1 className={styles.title}>Luyện đọc đoạn văn</h1>
         <p className={styles.lead}>
           Nghe mẫu từng câu, đọc thành tiếng hoặc gõ cách đọc để máy chấm theo 3 nhóm: Chữ Hán

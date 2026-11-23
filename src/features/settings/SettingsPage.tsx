@@ -92,6 +92,9 @@ export function SettingsPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
+        <span className={styles.bgWord} aria-hidden="true" lang="ja">
+          設定
+        </span>
         <h1 className={styles.title}>Cài đặt</h1>
         <p className={styles.lead}>
           Mọi tuỳ chọn và tiến độ học nằm riêng trên thiết bị này, không đồng bộ lên máy chủ ngoài.

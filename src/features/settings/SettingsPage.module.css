@@ -5,19 +5,37 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--sp-1);
-  max-width: 62ch;
+  overflow: hidden;
+}
+
+.bgWord {
+  position: absolute;
+  right: 0;
+  top: -12px;
+  font-family: var(--font-display);
+  font-size: clamp(3.8rem, 9vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+  opacity: 0.065;
+  pointer-events: none;
+  user-select: none;
 }
 
 .title {
-  font-size: var(--text-2xl);
-  letter-spacing: -0.02em;
+  position: relative;
+  font-size: clamp(1.85rem, 3.8vw, 2.5rem);
+  letter-spacing: -0.025em;
 }
 
 .lead {
+  position: relative;
   color: var(--ink-2);
+  max-width: 60ch;
 }
 
 /* Editorial two-column settings ledger directly on washi */
@@ -100,7 +118,7 @@
 .preview {
   padding: 10px 14px;
   border-radius: var(--radius-sm);
-  border-left: 3px solid var(--accent);
+  border-left: 4px solid var(--riso);
   background: var(--surface);
   font-family: var(--font-jp);
   font-size: var(--text-md);

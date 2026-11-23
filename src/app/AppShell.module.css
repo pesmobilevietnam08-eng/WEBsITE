@@ -19,7 +19,7 @@
   padding: 10px var(--sp-4);
   padding-top: max(10px, env(safe-area-inset-top, 0px));
   background: var(--bg);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 2px solid var(--ink);
 }
 
 .brand {
@@ -30,38 +30,42 @@
   color: var(--ink);
 }
 
-/* Square Hanko stamp mark */
+/* Authentic vermilion Hanko brand seal */
 .brandMark {
-  width: 34px;
-  height: 34px;
-  border-radius: 5px;
-  border: 2px solid var(--hanko);
-  background: transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: 3px;
+  border: 2.5px solid var(--hanko);
+  background: var(--surface);
   color: var(--hanko);
   display: grid;
   place-items: center;
-  font-weight: 700;
-  font-size: 0.78rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  transform: rotate(-4deg);
   flex: none;
 }
 
 .brandText {
   display: flex;
   flex-direction: column;
+  gap: 3px;
   line-height: 1.2;
 }
 
 .brandTitle {
-  font-weight: 700;
-  font-size: var(--text-sm);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--text-md);
   letter-spacing: -0.01em;
 }
 
 .brandSub {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--ink-2);
+  font-weight: 600;
 }
 
 .headerActions {
@@ -77,14 +81,13 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   background: var(--surface);
   color: var(--ink);
 }
 
 .iconBtn:hover {
   background: var(--surface-2);
-  border-color: var(--line-strong);
 }
 
 .contentWrap {
@@ -114,7 +117,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   background: var(--surface);
-  border-top: 1px solid var(--line);
+  border-top: 2px solid var(--ink);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -129,8 +132,8 @@
   color: var(--ink-2);
   text-decoration: none;
   font-size: 0.72rem;
-  font-weight: 600;
-  border-top: 2px solid transparent;
+  font-weight: 700;
+  border-top: 3px solid transparent;
 }
 
 .bottomLinkActive {
@@ -160,13 +163,13 @@
     gap: var(--sp-6);
     padding: var(--sp-8) var(--sp-4) var(--sp-6);
     background: var(--surface-2);
-    border-right: 1px solid var(--line);
+    border-right: 2px solid var(--ink);
   }
 
   .sideNav {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
   }
 
   .sideLink {
@@ -175,15 +178,17 @@
     gap: var(--sp-3);
     min-height: 44px;
     padding: 10px 12px;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    border-radius: var(--radius-sm);
     color: var(--ink-2);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     font-size: var(--text-sm);
-    border-left: 2.5px solid transparent;
+    border: 1.5px solid transparent;
+    border-left: 4px solid transparent;
     transition:
       background-color var(--dur-fast) var(--ease-out),
-      color var(--dur-fast) var(--ease-out);
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
   }
 
   .sideLink:hover {
@@ -195,23 +200,35 @@
     background: var(--surface);
     color: var(--ink);
     font-weight: 700;
-    border-left-color: var(--accent);
+    border-color: var(--ink);
+    border-left: 4px solid var(--accent);
+    box-shadow: var(--shadow-1);
   }
 
   .sideFoot {
     margin-top: auto;
     padding-top: var(--sp-4);
-    border-top: 1px solid var(--line);
+    border-top: 2px solid var(--ink);
     display: flex;
     flex-direction: column;
     gap: var(--sp-3);
+    position: relative;
+  }
+
+  .colophon {
+    position: absolute;
+    right: 6px;
+    bottom: 112px;
+    font-size: 0.75rem;
+    color: var(--ink-2);
+    pointer-events: none;
   }
 
   .learnerPill {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    padding: 4px 2px;
+    padding: 2px;
     font-size: var(--text-xs);
     color: var(--ink-2);
   }

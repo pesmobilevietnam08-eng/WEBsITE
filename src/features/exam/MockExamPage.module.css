@@ -5,19 +5,39 @@
 }
 
 .header {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--sp-1);
-  max-width: 64ch;
+  padding-bottom: var(--sp-4);
+  border-bottom: 2.5px solid var(--ink);
+  overflow: hidden;
+}
+
+.bgWord {
+  position: absolute;
+  right: 0;
+  top: -12px;
+  font-family: var(--font-display);
+  font-size: clamp(3.8rem, 9vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+  opacity: 0.065;
+  pointer-events: none;
+  user-select: none;
 }
 
 .title {
-  font-size: var(--text-2xl);
-  letter-spacing: -0.02em;
+  position: relative;
+  font-size: clamp(1.85rem, 3.8vw, 2.5rem);
+  letter-spacing: -0.025em;
 }
 
 .lead {
+  position: relative;
   color: var(--ink-2);
+  max-width: 60ch;
 }
 
 .section {

@@ -1,6 +1,6 @@
 .card {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   padding: var(--sp-4);
 }
@@ -11,9 +11,9 @@
   }
 }
 
-/* Notebook binding left margin rule instead of SaaS top stripe */
+/* Riso cobalt offset shadow for focal editorial sheets */
 .ruled {
-  border-left: 3.5px solid var(--accent);
+  box-shadow: var(--shadow-2);
 }
 
 .qcard {
@@ -22,25 +22,26 @@
   flex-direction: column;
   gap: var(--sp-2);
   width: 100%;
-  min-height: 108px;
+  min-height: 112px;
   padding: var(--sp-4);
   text-align: left;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--ink);
   background: var(--surface);
   color: var(--ink);
   transition:
-    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out);
 }
 
 .qcard:hover {
-  border-color: var(--ink);
-  background: var(--surface);
+  box-shadow: 4px 4px 0 var(--riso);
+  transform: translate(-1px, -1px);
 }
 
 .qcardDone {
-  border-left: 3px solid var(--good);
+  border-left: 5px solid var(--good);
 }
 
 .qcardHead {
@@ -51,8 +52,9 @@
 }
 
 .qcardNo {
+  font-family: var(--font-display);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 800;
   color: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
@@ -61,17 +63,17 @@
   display: inline-flex;
   align-items: center;
   padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1.5px solid var(--ink);
   background: var(--bg);
-  color: var(--ink-2);
+  color: var(--ink);
 }
 
 .qcardTitle {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.45;
   color: var(--ink);
   overflow-wrap: anywhere;
@@ -80,13 +82,13 @@
 .qcardFoot {
   margin-top: auto;
   padding-top: var(--sp-2);
-  border-top: 1px solid var(--line);
+  border-top: 1px dashed var(--line-strong);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-2);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .statusNew {
@@ -106,18 +108,19 @@
   color: var(--bad);
 }
 
-/* Square vermilion Hanko seal */
+/* Square tilted vermilion Hanko seal */
 .hankoSeal {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: 1.5px solid var(--hanko);
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+  border: 2px solid var(--hanko);
   color: var(--hanko);
-  font-family: var(--font-jp);
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  transform: rotate(-8deg);
   flex: none;
 }

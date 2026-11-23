@@ -5,7 +5,16 @@ import { loadCatalog, loadScale, type CatalogData, type CatalogItem } from '../.
 import type { ScaleMap } from '../../data/schema';
 import { R9_FALLBACK_SCALE } from '../../engine/scale';
 import { computeStreak, formatShortDateTime } from '../../lib/date';
-import { Button, EmptyState, Icon, ProgressBar, ScoreRing, SkeletonGrid } from '../../ui';
+import {
+  Button,
+  EmptyState,
+  HankoStamp,
+  Icon,
+  PostageStamp,
+  ProgressBar,
+  ScoreRing,
+  SkeletonGrid,
+} from '../../ui';
 import styles from './DashboardPage.module.css';
 
 type SearchFilter = 'all' | 'read' | 'pic' | 'free';
@@ -172,7 +181,7 @@ export function DashboardPage() {
           if (rec.best < 80) {
             candidates.push({
               item,
-              reason: `Điểm đọc còn thấp (${rec.best}%), nên luyện lại sớm`,
+              reason: `Điểm đọc còn thấp (${rec.best}%), đấu lại cho chắc`,
               badge: `${rec.best}%`,
               tone: rec.best < 60 ? 'bad' : 'warn',
               priority: 100 - rec.best + (due ? 40 : 0),
@@ -194,7 +203,7 @@ export function DashboardPage() {
           if (rec.best < 85) {
             candidates.push({
               item,
-              reason: `Vấn đáp có tranh (${rec.best}%), cần củng cố mẫu câu`,
+              reason: `Vấn đáp có tranh (${rec.best}%), cần gỡ điểm trừ`,
               badge: `${rec.best}%`,
               tone: rec.best < 60 ? 'bad' : 'warn',
               priority: 105 - rec.best + (due ? 40 : 0),
@@ -230,7 +239,7 @@ export function DashboardPage() {
       if (candidates.length >= 6) break;
       candidates.push({
         item: it,
-        reason: `Chưa luyện, Bài ${it.bai} (${kindLabel(it.kind)})`,
+        reason: `Ván mới, Bài ${it.bai} (${kindLabel(it.kind)})`,
         badge: 'Mới',
         tone: 'accent',
         priority: 10,
@@ -267,142 +276,154 @@ export function DashboardPage() {
 
   const featured = reviewQueue[0] ?? null;
   const remainingQueue = featured ? reviewQueue.slice(1) : reviewQueue;
+  const watermarkText = '日本語試験';
 
   return (
     <div className={styles.page}>
-      {/* Editorial masthead directly on washi paper */}
-      <header className={styles.masthead}>
-        <div className={styles.mastheadText}>
-          <h1 className={styles.title}>
-            Chào{' '}
-            <span className="jp" lang="ja">
-              {state.name}さん
-            </span>
-          </h1>
-          <p className={styles.lead}>
-            Đã luyện{' '}
-            <strong className="tabular">
-              {stats.practicedItems}/{stats.totalItems}
-            </strong>{' '}
-            mục trong 3 Bài. Toàn bộ điểm số và lịch sử luyện tập nằm riêng trên máy này.
-          </p>
+      {/* SPOTLIGHT 1 — Magazine Cover × Tournament Poster Hero */}
+      <section className={styles.coverSpread} aria-label="Bìa sổ tay luyện thi JPD113">
+        {/* Giant cropped Japanese display typography as background cover art */}
+        <div className={styles.bgGlyph} aria-hidden="true" lang="ja">
+          {watermarkText}
         </div>
-        <div className={styles.quickNav}>
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Icon name="book" size={16} />}
-            onClick={() => navigate(`/read?bai=${state.settings.lastBai}`)}
-          >
-            Luyện đọc
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Icon name="shuffle" size={16} />}
-            onClick={() => navigate(`/qa/random?bai=${state.settings.lastBai}`)}
-          >
-            Vấn đáp ngẫu nhiên
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Icon name="clock" size={16} />}
-            onClick={() => navigate('/exam')}
-          >
-            Thi thử
-          </Button>
-        </div>
-      </header>
 
-      {/* Hairline-divided notebook progress ledger (no boxy KPI cards) */}
-      <section className={styles.ledger} aria-label="Tổng quan tiến độ">
-        <div className={styles.ledgerCell}>
-          <span className={styles.ledgerLabel}>Chuỗi ngày luyện</span>
-          <span className={styles.ledgerNum}>{streak} ngày</span>
-          <span className={styles.ledgerSub}>Tổng {state.activityDays.length} ngày học</span>
-        </div>
-        <div className={styles.ledgerCell}>
-          <span className={styles.ledgerLabel}>Luyện đọc</span>
-          <span className={styles.ledgerNum}>
-            {stats.readDone}/{stats.readTotal}
+        <div className={styles.coverSpine} aria-hidden="true">
+          <span className="jp-spine" lang="ja">
+            日本語・試験
           </span>
-          <span className={styles.ledgerSub}>Đoạn văn Bài 1–3</span>
         </div>
-        <div className={styles.ledgerCell}>
-          <span className={styles.ledgerLabel}>Vấn đáp có tranh</span>
-          <span className={styles.ledgerNum}>
-            {stats.picDone}/{stats.picTotal}
-          </span>
-          <span className={styles.ledgerSub}>Chấm theo thang R0–R11</span>
+
+        <div className={styles.coverMain}>
+          <header className={styles.masthead}>
+            <h1 className={styles.title}>
+              Chào{' '}
+              <span className={styles.nameJp} lang="ja">
+                {state.name}さん
+              </span>
+            </h1>
+            <p className={styles.lead}>
+              Đã qua{' '}
+              <strong className="tabular">
+                {stats.practicedItems}/{stats.totalItems}
+              </strong>{' '}
+              ván trên 3 Bài. Mọi điểm số lưu riêng trên máy này, sẵn sàng chạy không cần mạng.
+            </p>
+          </header>
+
+          {/* Primary Focal Tournament Match Box (Riso offset shadow) */}
+          {featured ? (
+            <div
+              className={`${styles.matchPoster} ${
+                featured.tone === 'bad' || featured.tone === 'warn' ? styles.matchPosterHot : ''
+              }`}
+            >
+              <div className={styles.matchTop}>
+                <span className={styles.matchTag}>
+                  Bài {featured.item.bai}, {kindLabel(featured.item.kind)}
+                </span>
+                <span className={styles.matchReason}>{featured.reason}</span>
+              </div>
+              <p className={styles.matchJp} lang="ja">
+                {featured.item.jp.slice(0, 72)}
+                {featured.item.jp.length > 72 ? '…' : ''}
+              </p>
+              {featured.item.kind !== 'read' ? (
+                <p className={styles.matchSub}>{featured.item.title}</p>
+              ) : null}
+              <div className={styles.matchActions}>
+                <Button variant="primary" size="lg" onClick={() => openItem(featured.item)}>
+                  Vào phòng thi ngay
+                </Button>
+                <Button
+                  variant="secondary"
+                  icon={<Icon name="shuffle" size={16} />}
+                  onClick={() => navigate(`/qa/random?bai=${state.settings.lastBai}`)}
+                >
+                  Bốc câu ngẫu nhiên
+                </Button>
+              </div>
+            </div>
+          ) : null}
         </div>
-        <div className={styles.ledgerCell}>
-          <span className={styles.ledgerLabel}>Vấn đáp không tranh</span>
-          <span className={styles.ledgerNum}>
-            {stats.freeDone}/{stats.freeTotal}
+
+        {/* Right Asymmetric Poster Column: Postage Stamp Streak + Big ScoreRing + Hanko Seal */}
+        <aside className={styles.coverAside}>
+          <div className={styles.stampRow}>
+            <PostageStamp days={streak} totalDays={state.activityDays.length} />
+          </div>
+
+          <div className={styles.scorePoster}>
+            <div className={styles.scorePosterHead}>
+              <ScoreRing
+                value={stats.avgPct}
+                max={100}
+                size="sm"
+                label={stats.practicedItems > 0 ? 'Điểm TB chung' : 'Chưa chấm ván nào'}
+                sublabel={
+                  stats.practicedItems > 0 ? 'Trên các bài đã chấm' : 'Bấm Vào phòng thi để mở màn'
+                }
+              />
+              {stats.practicedItems > 0 ? (
+                <HankoStamp
+                  glyph={stats.avgPct >= 85 ? '優' : stats.avgPct >= 65 ? '良' : '挑'}
+                  caption={stats.avgPct >= 85 ? '合格圏' : '修行中'}
+                  tone="hanko"
+                  size="sm"
+                />
+              ) : (
+                <HankoStamp glyph="戦" caption="開戦" tone="hanko" size="sm" animate={false} />
+              )}
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      {/* Bold print-ruled breakdown ledger */}
+      <section className={styles.printStrip} aria-label="Thống kê ba phần thi">
+        <div className={styles.stripCell}>
+          <span className={styles.stripLabel}>Luyện đọc thành tiếng</span>
+          <span className={styles.stripNum}>
+            {stats.readDone}
+            <span className={styles.stripDen}>/{stats.readTotal}</span>
           </span>
-          <span className={styles.ledgerSub}>Tự soát theo chủ đề</span>
+          <span className={styles.stripSub}>44 đoạn văn, chấm 30/30/40</span>
+        </div>
+        <div className={styles.stripCell}>
+          <span className={styles.stripLabel}>Vấn đáp có tranh</span>
+          <span className={styles.stripNum}>
+            {stats.picDone}
+            <span className={styles.stripDen}>/{stats.picTotal}</span>
+          </span>
+          <span className={styles.stripSub}>Thang 15 điểm theo lỗi R0–R11</span>
+        </div>
+        <div className={styles.stripCell}>
+          <span className={styles.stripLabel}>Vấn đáp không tranh</span>
+          <span className={styles.stripNum}>
+            {stats.freeDone}
+            <span className={styles.stripDen}>/{stats.freeTotal}</span>
+          </span>
+          <span className={styles.stripSub}>Bảng tự soát theo chủ đề L01–L14</span>
         </div>
       </section>
 
-      {/* Single elevated focal artifact: Next-up live Japanese study folio */}
-      {featured ? (
-        <section
-          className={`${styles.focalFolio} ${
-            featured.tone === 'bad' || featured.tone === 'warn' ? styles.focalFolioReview : ''
-          }`}
-          aria-label="Bài luyện gợi ý tiếp theo"
-        >
-          <div className={styles.focalBody}>
-            <div className={styles.focalMeta}>
-              <span className={styles.focalTag}>
-                Bài {featured.item.bai}, {kindLabel(featured.item.kind)}
-              </span>
-              <span className={styles.focalReason}>{featured.reason}</span>
-            </div>
-            <p className={styles.focalJp} lang="ja">
-              {featured.item.jp.slice(0, 88)}
-              {featured.item.jp.length > 88 ? '…' : ''}
-            </p>
-            {featured.item.kind !== 'read' ? (
-              <p className={styles.focalTitle}>{featured.item.title}</p>
-            ) : null}
-            <div className={styles.focalActions}>
-              <Button variant="primary" onClick={() => openItem(featured.item)}>
-                Luyện mục này ngay
-              </Button>
-            </div>
-          </div>
-          <div className={styles.focalRing}>
-            <ScoreRing
-              value={stats.avgPct}
-              max={100}
-              label={stats.practicedItems > 0 ? 'Điểm TB chung' : 'Chưa có điểm'}
-              sublabel={
-                stats.practicedItems > 0
-                  ? 'Tính trên các mục đã chấm'
-                  : 'Hoàn thành mục đầu tiên hôm nay'
-              }
-            />
-          </div>
-        </section>
-      ) : null}
-
-      {/* Asymmetric editorial spread: Review Ledger (60%) + Lesson Map (40%) */}
+      {/* Asymmetric 58 / 42 Editorial Spread */}
       <div className={styles.spread}>
         <section className={styles.spreadMain}>
           <div className={styles.secHead}>
             <h2 className={styles.secTitle}>Câu nên ôn hôm nay</h2>
-            <span className={styles.hint}>Ưu tiên câu điểm thấp hoặc đến hạn</span>
+            <span className={styles.hint}>Ưu tiên câu dễ mất điểm hoặc đến hạn</span>
           </div>
           <div className={styles.ledgerList}>
-            {remainingQueue.map((entry) => (
+            {remainingQueue.map((entry, idx) => (
               <button
                 key={entry.item.id}
                 type="button"
-                className={styles.ledgerRow}
+                className={`${styles.ledgerRow} ${
+                  entry.tone === 'bad' || entry.tone === 'warn' ? styles.ledgerRowAlert : ''
+                }`}
                 onClick={() => openItem(entry.item)}
               >
+                <span className={styles.rowIdx}>{String(idx + 1).padStart(2, '0')}</span>
                 <span className={styles.rowMeta}>
                   <span
                     className={`${styles.rowTitle} ${entry.item.kind === 'read' ? 'jp' : ''}`}
@@ -418,7 +439,7 @@ export function DashboardPage() {
                       ? styles.stampBad
                       : entry.tone === 'warn'
                         ? styles.stampWarn
-                        : styles.stampAccent
+                        : styles.stampRiso
                   }`}
                 >
                   {entry.badge}
@@ -430,7 +451,7 @@ export function DashboardPage() {
 
         <aside className={styles.spreadSide}>
           <div className={styles.secHead}>
-            <h2 className={styles.secTitle}>Tiến độ theo Bài</h2>
+            <h2 className={styles.secTitle}>Bản đồ 3 Bài</h2>
           </div>
           <div className={styles.baiBars}>
             {stats.byBai.map((b) => (
@@ -449,11 +470,11 @@ export function DashboardPage() {
           </div>
 
           <div className={styles.errorBlock}>
-            <h3 className={styles.subTitle}>Lỗi vấn đáp hay gặp</h3>
+            <h3 className={styles.subTitle}>Bút đỏ lưu ý gần đây</h3>
             {stats.topErrors.length === 0 ? (
               <p className={styles.hint}>
-                Khi em luyện các câu vấn đáp có tranh, các lỗi thường lặp lại (R0–R11) sẽ tổng hợp
-                tại đây.
+                Chưa có lỗi vấn đáp nào. Khi luyện câu có tranh, các lỗi lặp lại (R0–R11) sẽ được
+                khoanh đỏ tại đây.
               </p>
             ) : (
               <div className={styles.errorList}>
@@ -472,11 +493,11 @@ export function DashboardPage() {
         </aside>
       </div>
 
-      {/* Inline offline search directly on washi */}
+      {/* Offline Quick Search directly on print paper */}
       <section className={styles.flatSection}>
         <div className={styles.secHead}>
-          <h2 className={styles.secTitle}>Tìm nhanh câu hỏi và từ vựng</h2>
-          <span className={styles.hint}>Tra cứu ngoại tuyến trên 107 mục</span>
+          <h2 className={styles.secTitle}>Tra cứu nhanh 107 mục</h2>
+          <span className={styles.hint}>Tìm tức thì ngay cả khi ngoại tuyến</span>
         </div>
         <div className={styles.searchBar}>
           <div className={styles.searchInputWrap}>
@@ -520,7 +541,7 @@ export function DashboardPage() {
             <EmptyState
               icon="search"
               title="Không tìm thấy kết quả phù hợp"
-              description="Thử tìm bằng từ khoá ngắn hơn hoặc chuyển bộ lọc về Tất cả."
+              description="Thử từ khoá ngắn hơn hoặc chuyển bộ lọc về Tất cả."
               action={
                 <Button
                   variant="secondary"
@@ -552,7 +573,7 @@ export function DashboardPage() {
                       {item.jp.length > 64 ? '…' : ''}
                     </span>
                   </span>
-                  <span className={`${styles.stamp} ${styles.stampAccent}`}>Bài {item.bai}</span>
+                  <span className={`${styles.stamp} ${styles.stampRiso}`}>Bài {item.bai}</span>
                 </button>
               ))}
             </div>
@@ -560,13 +581,13 @@ export function DashboardPage() {
         ) : null}
       </section>
 
-      {/* Recent mock exam history directly on washi */}
+      {/* Recent mock exam history */}
       {state.examHistory.length > 0 ? (
         <section className={styles.flatSection}>
           <div className={styles.secHead}>
             <h2 className={styles.secTitle}>Lịch sử thi thử gần đây</h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/exam')}>
-              Làm đề thi mới
+            <Button variant="secondary" size="sm" onClick={() => navigate('/exam')}>
+              Thi đề mới
             </Button>
           </div>
           <div className={styles.ledgerList}>
@@ -580,7 +601,7 @@ export function DashboardPage() {
                     {ex.readScore}%, có tranh {ex.picAvgPct}%, không tranh {ex.freePassCount}/
                     {ex.freeTotal}
                   </span>
-                  <span className={`${styles.stamp} ${styles.stampAccent}`}>{ex.overallPct}%</span>
+                  <span className={`${styles.stamp} ${styles.stampRiso}`}>{ex.overallPct}%</span>
                 </div>
               ))}
           </div>

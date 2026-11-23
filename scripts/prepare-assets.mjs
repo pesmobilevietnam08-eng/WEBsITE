@@ -201,11 +201,15 @@ console.log(
   `OK: Prepared ${cfg.bais.length} lesson chunks, ${pngFiles.length} pictures (AVIF/WebP/PNG), and PWA icons.`,
 );
 
-// 4. Generate trimmed woff2-only @font-face CSS for self-hosted Be Vietnam Pro & Noto Sans JP
+// 4. Generate trimmed woff2-only @font-face CSS for self-hosted Be Vietnam Pro, Noto Sans JP & Shippori Mincho (display)
+const EDITORIAL_JP_CHARS =
+  '日本語試験合格優良再戦採点票写真朗読第壱弐参問切手〒印必勝本番勝負話読答問答設定挑戦修行中開会話録音赤添削自習検課題百拾口頭';
+
 const allDataText = [
   fs.readFileSync(path.join(dataDir, 'cfg.json'), 'utf8'),
   fs.readFileSync(path.join(dataDir, 'data.json'), 'utf8'),
   fs.readFileSync(path.join(dataDir, 'rd.json'), 'utf8'),
+  EDITORIAL_JP_CHARS,
 ].join('');
 const jpCodepoints = new Set();
 for (const ch of allDataText) {
@@ -214,6 +218,13 @@ for (const ch of allDataText) {
 }
 for (let c = 0x3000; c <= 0x30ff; c++) jpCodepoints.add(c);
 for (let c = 0xff00; c <= 0xff60; c++) jpCodepoints.add(c);
+
+const displayJpCodepoints = new Set();
+for (const ch of EDITORIAL_JP_CHARS) {
+  const cp = ch.codePointAt(0);
+  if (cp !== undefined) displayJpCodepoints.add(cp);
+}
+for (let c = 0x3040; c <= 0x30ff; c++) displayJpCodepoints.add(c);
 
 function extractFontFaces(pkgDir, cssRelPath, filterCodepoints) {
   const fullCss = fs.readFileSync(path.join(rootDir, 'node_modules', pkgDir, cssRelPath), 'utf8');
@@ -260,6 +271,12 @@ for (const w of [400, 500, 600, 700]) {
 }
 for (const w of [400, 500, 700]) {
   fontBlocks.push(...extractFontFaces('@fontsource/noto-sans-jp', `${w}.css`, jpCodepoints));
+}
+for (const w of [700, 800]) {
+  fontBlocks.push(
+    ...extractFontFaces('@fontsource/shippori-mincho', `latin-${w}.css`, null),
+    ...extractFontFaces('@fontsource/shippori-mincho', `${w}.css`, displayJpCodepoints),
+  );
 }
 
 const fontsCssPath = path.join(generatedDir, 'fonts.css');

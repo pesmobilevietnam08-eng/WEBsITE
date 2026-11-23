@@ -11,8 +11,8 @@
 }
 
 .info {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--riso);
+  background: var(--riso-soft);
 }
 
 .warn {
@@ -36,7 +36,7 @@
 }
 
 .info .icon {
-  color: var(--accent);
+  color: var(--riso);
 }
 .warn .icon {
   color: var(--warn);

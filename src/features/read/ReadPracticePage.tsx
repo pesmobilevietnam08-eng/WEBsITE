@@ -16,13 +16,14 @@ import {
   Banner,
   Button,
   Card,
+  CountUpNumber,
   DiffText,
   EmptyState,
+  HankoStamp,
   Icon,
   MicButton,
   ProgressBar,
   Ruby,
-  ScoreRing,
   SkeletonGrid,
   Switch,
   type MicState,
@@ -306,21 +307,40 @@ export function ReadPracticePage() {
       </div>
 
       {showResult && label ? (
-        <div className={styles.page} aria-live="polite">
-          <Card className={`${styles.resultCard} ${toneClass}`}>
-            <ScoreRing
-              value={result.total}
-              max={100}
-              label={label.text}
-              sublabel={`Chữ Hán ${cfg.wt[0]}%, Katakana ${cfg.wt[1]}%, Hiragana ${cfg.wt[2]}%`}
-            />
+        <div className={`${styles.page} page-turn`} aria-live="polite">
+          <Card ruled className={`${styles.resultCard} ${toneClass}`}>
+            {/* SPOTLIGHT 3 — Giant Count-Up Score + Vertical Spine + Slamming Red Hanko */}
+            <div className={styles.scoreHero}>
+              <div className={styles.scoreSpine} aria-hidden="true">
+                <span className="jp-spine" lang="ja">
+                  朗読採点
+                </span>
+              </div>
+              <div className={styles.scoreMain}>
+                <span className={styles.giantScore}>
+                  <CountUpNumber value={result.total} suffix="%" />
+                </span>
+                <p className={styles.verdict}>{label.text}</p>
+                <p className={styles.hint}>
+                  Chấm theo 3 nhóm chữ (Chữ Hán {cfg.wt[0]}%, Katakana {cfg.wt[1]}%, Hiragana{' '}
+                  {cfg.wt[2]}%). Ngữ điệu không được chấm.
+                </p>
+              </div>
+              <div className={styles.stampDock}>
+                <HankoStamp
+                  glyph={result.total >= 93 ? '優' : result.total >= 65 ? '良' : '再'}
+                  caption={result.total >= 93 ? '合格' : result.total >= 65 ? '採点済' : '再挑戦'}
+                  tone="hanko"
+                  size="lg"
+                  label={`Con dấu chấm bài đọc: ${label.text}`}
+                />
+              </div>
+            </div>
             <p className={styles.hint}>
-              Tổng theo tỷ trọng thi thật: Chữ Hán {cfg.wt[0]}%, Katakana {cfg.wt[1]}%, Hiragana{' '}
-              {cfg.wt[2]}%.{' '}
               {cfg.partial
-                ? 'Từ Hán và Katakana được tính một phần theo số chữ đọc đúng.'
-                : 'Từ Hán và Katakana chỉ đúng khi đọc đúng toàn bộ từ.'}{' '}
-              Máy chỉ so chữ nhận được với bản mẫu; ngữ điệu không được chấm.
+                ? 'Từ Hán và Katakana được tính điểm một phần theo số chữ đọc đúng.'
+                : 'Từ Hán và Katakana chỉ tính đúng khi đọc khớp toàn bộ từ.'}{' '}
+              Máy chỉ so chữ nhận được với bản mẫu để em tự sửa trước kỳ thi.
             </p>
 
             {/* Three groups */}
@@ -344,7 +364,7 @@ export function ReadPracticePage() {
                 <ProgressBar
                   value={result.i.pct}
                   max={100}
-                  tone="accent"
+                  tone="good"
                   label={`Hiragana (đúng ${result.i.ok}/${result.i.n} chữ)`}
                   valueLabel={`${result.i.pct}%`}
                 />
@@ -365,9 +385,14 @@ export function ReadPracticePage() {
               </div>
             </div>
 
-            {/* Errors by group */}
-            <div className={styles.section}>
-              <h2 className={styles.secTitle}>Chỗ cần sửa</h2>
+            {/* Errors by group — Teacher Red-Pen */}
+            <div className={`${styles.section} ${styles.redPenZone}`}>
+              <div className={styles.redPenHead}>
+                <h2 className={styles.secTitle}>Chỗ cần sửa</h2>
+                <span className={styles.redPenTag} lang="ja" aria-hidden="true">
+                  赤ペン添削
+                </span>
+              </div>
               {result.errs.length === 0 ? (
                 <div className={styles.okBox}>Em đọc khớp hoàn toàn với bản mẫu.</div>
               ) : (
@@ -467,9 +492,15 @@ export function ReadPracticePage() {
           </div>
         </div>
       ) : (
-        <div className={styles.split}>
-          {/* Left column: Passage & Listen controls */}
+        <div key={passage.id} className={`${styles.split} page-turn`}>
+          {/* Left column: Magazine Reading Folio & Listen controls */}
           <Card ruled className={styles.col}>
+            <div className={styles.folioHead}>
+              <span className={styles.folioTitle}>Bản đọc thành tiếng</span>
+              <span className={styles.folioJp} lang="ja" aria-hidden="true">
+                朗読課題
+              </span>
+            </div>
             <p className={styles.note}>
               Đọc thành tiếng đoạn văn dưới đây.{' '}
               <span className={styles.hanText}>Chữ Hán gạch chân đỏ</span> và{' '}
@@ -493,7 +524,7 @@ export function ReadPracticePage() {
 
             <div className={styles.controls}>
               <Button
-                variant="primary"
+                variant="secondary"
                 icon={<Icon name={playing ? 'stop' : 'speaker'} size={18} />}
                 onClick={handleTogglePlay}
               >
@@ -534,8 +565,17 @@ export function ReadPracticePage() {
             ) : null}
           </Card>
 
-          {/* Right column: Recording / Typing input */}
-          <Card className={styles.col}>
+          {/* Right column: Broadcast Recording / Typing Console */}
+          <Card className={`${styles.col} ${styles.studioCol}`}>
+            <div className={styles.folioHead}>
+              <span className={styles.studioTitle}>
+                <span className={styles.liveDot} aria-hidden="true" />
+                Phòng thu đọc bài
+              </span>
+              <span className={styles.folioJp} lang="ja" aria-hidden="true">
+                録音
+              </span>
+            </div>
             <label htmlFor={textareaId} className={styles.label}>
               Em đọc
             </label>
@@ -554,9 +594,9 @@ export function ReadPracticePage() {
 
             <div className={styles.actionRow}>
               {!state.settings.typingOnly && capabilities.hasSTT ? (
-                <MicButton state={micState} idleLabel="Đọc" onClick={handleMicToggle} />
+                <MicButton state={micState} size="lg" idleLabel="Đọc" onClick={handleMicToggle} />
               ) : null}
-              <Button variant="primary" onClick={handleSubmit}>
+              <Button variant="primary" size="lg" onClick={handleSubmit}>
                 Chấm bài đọc
               </Button>
             </div>

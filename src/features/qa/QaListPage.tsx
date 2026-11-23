@@ -82,6 +82,9 @@ export function QaListPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
+        <span className={styles.bgWord} aria-hidden="true" lang="ja">
+          問答
+        </span>
         <h1 className={styles.title}>Luyện vấn đáp</h1>
         <p className={styles.lead}>
           Nghe câu hỏi (chưa hiện chữ), trả lời bằng giọng nói hoặc gõ Romaji và nhận phân tích theo

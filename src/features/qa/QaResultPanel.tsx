@@ -7,7 +7,7 @@ import {
   type PicGradeResult,
 } from '../../engine';
 import { speakQuestion } from '../../speech';
-import { Banner, Button, Card, FeedbackLadder, Icon, ScoreRing } from '../../ui';
+import { Banner, Button, Card, CountUpNumber, FeedbackLadder, HankoStamp, Icon } from '../../ui';
 import { PromoCard } from '../promo/PromoCard';
 import styles from './QaResultPanel.module.css';
 
@@ -47,6 +47,9 @@ export function QaResultPanel({
           ? styles.toneMid
           : styles.toneLow;
 
+    const stampGlyph = picResult.p >= 93 ? '優' : picResult.p >= 65 ? '良' : '再';
+    const stampCaption = picResult.p >= 93 ? '合格' : picResult.p >= 65 ? '採点済' : '再挑戦';
+
     const displaySpans = parseDisplayHighlight(
       formatQuestionText(question.questionDisplay, learnerName),
     );
@@ -73,24 +76,48 @@ export function QaResultPanel({
       }));
 
     return (
-      <div className={styles.panel} aria-live="polite">
-        <Card className={`${styles.panel} ${toneClass}`}>
-          <ScoreRing
-            value={picResult.s}
-            max={15}
-            label={label.text}
-            sublabel={`${picResult.p}% (${picResult.s}/15 điểm)`}
-          />
+      <div className={`${styles.panel} page-turn`} aria-live="polite">
+        <Card ruled className={`${styles.sheet} ${toneClass}`}>
+          {/* SPOTLIGHT 3 — Giant Count-Up Score + Slamming Red Hanko Stamp */}
+          <div className={styles.scoreHero}>
+            <div className={styles.scoreSpine} aria-hidden="true">
+              <span className="jp-spine" lang="ja">
+                採点票
+              </span>
+            </div>
+
+            <div className={styles.scoreMain}>
+              <div className={styles.scoreRow}>
+                <span className={styles.giantScore}>
+                  <CountUpNumber value={picResult.p} suffix="%" />
+                </span>
+                <span className={styles.fraction}>
+                  <strong className="tabular">{picResult.s}</strong>/15 điểm
+                </span>
+              </div>
+              <p className={styles.verdict}>{label.text}</p>
+              <p className={styles.smallMuted}>
+                Kết quả do máy ước tính từ chữ nhận được, dùng để tự luyện; ngữ điệu không được
+                chấm.
+              </p>
+            </div>
+
+            <div className={styles.stampDock}>
+              <HankoStamp
+                glyph={stampGlyph}
+                caption={stampCaption}
+                tone="hanko"
+                size="lg"
+                label={`Con dấu chấm bài: ${label.text}`}
+              />
+            </div>
+          </div>
 
           {picResult.zero ? (
             <Banner tone="danger" role="alert">
               Nội dung chưa đúng với tranh hoặc với câu hỏi nên câu này tính 0%.
             </Banner>
           ) : null}
-
-          <p className={styles.smallMuted}>
-            Kết quả do máy ước tính từ chữ nhận được, em dùng để tự luyện. Ngữ điệu không được chấm.
-          </p>
 
           {/* Section 1 */}
           <div className={styles.section}>
@@ -130,9 +157,14 @@ export function QaResultPanel({
             </div>
           </div>
 
-          {/* Section 3 */}
-          <div className={styles.section}>
-            <h2 className={styles.secTitle}>Điểm bị trừ và cách sửa</h2>
+          {/* Section 3 — Teacher Red-Pen Corrections */}
+          <div className={`${styles.section} ${styles.redPenZone}`}>
+            <div className={styles.redPenHead}>
+              <h2 className={styles.secTitle}>Bút đỏ chấm lỗi và cách sửa</h2>
+              <span className={styles.redPenTag} lang="ja" aria-hidden="true">
+                赤ペン添削
+              </span>
+            </div>
             {picResult.s === 15 ? (
               <div className={styles.okBox}>
                 Không bị trừ điểm nào.{' '}
@@ -177,7 +209,7 @@ export function QaResultPanel({
                 <span className={styles.sampleVn}>{question.sample1.vn}</span>
               </div>
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 aria-label="Nghe đáp án mẫu 1"
                 icon={<Icon name="speaker" size={16} />}
@@ -195,7 +227,7 @@ export function QaResultPanel({
                 <span className={styles.sampleVn}>{question.sample2.vn}</span>
               </div>
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 aria-label="Nghe đáp án mẫu 2"
                 icon={<Icon name="speaker" size={16} />}
@@ -241,15 +273,23 @@ export function QaResultPanel({
   if (question.kind === 'free' && freeResult) {
     const passed = freeResult.filter((c) => c.ok).length;
     return (
-      <div className={styles.panel} aria-live="polite">
-        <Card ruled className={styles.panel}>
-          <div>
-            <h2>
-              Phản hồi tham khảo ({passed}/{freeResult.length} tiêu chí đạt)
-            </h2>
-            <p className={styles.smallMuted}>
-              Câu này không tính điểm cố định. Em tự so câu trả lời của mình với bảng bên dưới.
-            </p>
+      <div className={`${styles.panel} page-turn`} aria-live="polite">
+        <Card ruled className={styles.sheet}>
+          <div className={styles.freeHero}>
+            <div>
+              <h2 className={styles.freeTitle}>
+                Phản hồi tham khảo ({passed}/{freeResult.length} tiêu chí đạt)
+              </h2>
+              <p className={styles.smallMuted}>
+                Câu này không tính điểm cố định. Em tự so câu trả lời của mình với bảng bên dưới.
+              </p>
+            </div>
+            <HankoStamp
+              glyph={passed === freeResult.length ? '優' : '検'}
+              caption="自習"
+              tone={passed === freeResult.length ? 'hanko' : 'warn'}
+              size="md"
+            />
           </div>
 
           <div className={styles.section}>
@@ -313,7 +353,7 @@ export function QaResultPanel({
                 <span className={styles.sampleVn}>{question.sample1.vn}</span>
               </div>
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 aria-label="Nghe câu trả lời gợi ý 1"
                 icon={<Icon name="speaker" size={16} />}
@@ -330,7 +370,7 @@ export function QaResultPanel({
                 <span className={styles.sampleVn}>{question.sample2.vn}</span>
               </div>
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 aria-label="Nghe câu trả lời gợi ý 2"
                 icon={<Icon name="speaker" size={16} />}

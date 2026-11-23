@@ -8,6 +8,9 @@ export {
 } from './SegmentedControl';
 export { Card, QuestionCard, type CardProps, type QuestionCardProps } from './Card';
 export { ScoreRing, type ScoreRingProps } from './ScoreRing';
+export { CountUpNumber, type CountUpNumberProps } from './CountUpNumber';
+export { HankoStamp, type HankoStampProps } from './HankoStamp';
+export { PostageStamp, type PostageStampProps } from './PostageStamp';
 export { MicButton, type MicButtonProps, type MicState } from './MicButton';
 export { DiffText, type DiffTextProps, type DiffToken, type DiffTokenType } from './DiffText';
 export {

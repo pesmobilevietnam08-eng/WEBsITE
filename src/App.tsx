@@ -2,10 +2,10 @@ import { lazy, Suspense } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router';
 import { AppProvider } from './app/AppContext';
 import { AppShell } from './app/AppShell';
-import { Card, ErrorBoundary, SkeletonGrid, ToastProvider } from './ui';
+import { ErrorBoundary, SkeletonGrid, ToastProvider } from './ui';
 
-const SettingsPage = lazy(() =>
-  import('./features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
+const DashboardPage = lazy(() =>
+  import('./features/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })),
 );
 const ReadListPage = lazy(() =>
   import('./features/read/ReadListPage').then((m) => ({ default: m.ReadListPage })),
@@ -19,18 +19,15 @@ const QaListPage = lazy(() =>
 const QaPracticePage = lazy(() =>
   import('./features/qa/QaPracticePage').then((m) => ({ default: m.QaPracticePage })),
 );
+const MockExamPage = lazy(() =>
+  import('./features/exam/MockExamPage').then((m) => ({ default: m.MockExamPage })),
+);
+const SettingsPage = lazy(() =>
+  import('./features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })),
+);
 const KitchenSinkPage = lazy(() =>
   import('./features/kitchen-sink/KitchenSinkPage').then((m) => ({ default: m.KitchenSinkPage })),
 );
-
-function SectionPlaceholder({ title, desc }: { title: string; desc: string }) {
-  return (
-    <Card ruled>
-      <h1>{title}</h1>
-      <p>{desc}</p>
-    </Card>
-  );
-}
 
 export function App() {
   return (
@@ -41,28 +38,12 @@ export function App() {
             <AppShell>
               <Suspense fallback={<SkeletonGrid count={4} />}>
                 <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <SectionPlaceholder
-                        title="Tiến độ luyện tập JPD113"
-                        desc="Tổng quan tiến độ, chuỗi ngày luyện tập và câu yếu cần ôn lại."
-                      />
-                    }
-                  />
+                  <Route path="/" element={<DashboardPage />} />
                   <Route path="/read" element={<ReadListPage />} />
                   <Route path="/read/:id" element={<ReadPracticePage />} />
                   <Route path="/qa" element={<QaListPage />} />
                   <Route path="/qa/:id" element={<QaPracticePage />} />
-                  <Route
-                    path="/exam"
-                    element={
-                      <SectionPlaceholder
-                        title="Thi thử có giới hạn thời gian"
-                        desc="Mô phỏng phòng thi nói JPD113 gồm đọc đoạn văn và vấn đáp."
-                      />
-                    }
-                  />
+                  <Route path="/exam" element={<MockExamPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/kitchen-sink" element={<KitchenSinkPage />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
